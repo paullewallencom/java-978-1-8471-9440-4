@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jbi xmlns="http://java.sun.com/xml/ns/jbi" version="1.0">
+  <service-assembly>
+    <identification>
+      <name>PipelineAssembly</name>
+      <description>Pipeline Service Assembly</description>
+    </identification>
+    <service-unit>
+      <identification>
+        <name>Pipeline</name>
+        <description>Pipeline Service Unit</description>
+      </identification>
+      <target>
+        <artifacts-zip>pipeline-su.zip</artifacts-zip>
+        <component-name>servicemix-eip</component-name>
+      </target>
+    </service-unit>
+  </service-assembly>
+</jbi>

@@ -1,0 +1,87 @@
+<project name="SoapBindEjb" default="all" basedir=".">
+
+  <property file="../../../examples.properties"/>
+
+  <!-- set global properties for this build -->
+  <property environment="env"/>
+  <property name="build.compiler" value="${compiler}"/>
+  <property name="source" value="."/>
+  <property name="build" value="${source}/build"/>
+  <property name="dist" value="${source}/dist"/>
+
+    <path id="classpath">
+        <fileset dir="${soap.home}/lib">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${jaf.home}">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${java.mail.home}">
+            <include name="*.jar"/>
+        </fileset>
+        <pathelement path="${build}" />
+    </path>         
+
+  <target name="all" depends="clean, init, compile"/>
+
+  <target name="clean">
+    <delete dir="${build}"/>
+  </target>
+
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="compile" depends="clean, init">
+    <javac srcdir="${source}" destdir="${build}"
+       includes="*.java">
+        <classpath>
+            <path refid="classpath"/>
+        </classpath>   
+    </javac>
+  </target>
+
+  <target name="deploy" depends="compile">
+    <java classname="org.apache.soap.server.ServiceManagerClient" fork="true" >
+      <arg value="http://localhost:8080/soap/servlet/rpcrouter"/>
+      <arg value="deploy"/>
+      <arg value="DeploymentDescriptor.xml"/>
+        <classpath>
+            <path refid="classpath"/>
+        </classpath>   
+    </java>
+  </target>
+
+  <target name="list">
+    <java classname="org.apache.soap.server.ServiceManagerClient" fork="true" >
+      <arg value="http://localhost:8080/soap/servlet/rpcrouter"/>
+      <arg value="list"/>
+        <classpath>
+            <path refid="classpath"/>
+        </classpath>   
+    </java>
+  </target>
+
+  <target name="undeploy">
+    <java classname="org.apache.soap.server.ServiceManagerClient" fork="true" >
+      <arg value="http://localhost:8080/soap/servlet/rpcrouter"/>
+      <arg value="undeploy"/>
+      <arg value="urn:ejbhello"/>
+        <classpath>
+            <path refid="classpath"/>
+        </classpath>   
+    </java>
+  </target>
+
+  <target name="run">
+    <java classname="samples.ejb.SoapTest" fork="true" >
+      <arg value="http://localhost:8080/soap/servlet/rpcrouter"/>
+        <classpath>
+            <path refid="classpath"/>
+        </classpath>   
+    </java>
+  </target>
+
+
+</project>

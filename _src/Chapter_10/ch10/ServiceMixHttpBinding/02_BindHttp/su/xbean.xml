@@ -1,0 +1,27 @@
+<beans  xmlns:http="http://servicemix.apache.org/http/1.0" 
+        xmlns:test="http://AxisEndToEnd.axis.apache.binildas.com">
+
+    <classpath>
+        <location>.</location>
+    </classpath>
+
+
+			    <http:endpoint service="test:IHelloWebService"
+					   endpoint="HelloWebService"
+					   role="provider" 
+					   locationURI="http://localhost:8080/AxisEndToEnd/services/HelloWebService" 
+					   soap="true" 
+					   soapAction="" 
+					   wsdlResource="http://localhost:8080/AxisEndToEnd/services/HelloWebService?WSDL" />                   
+
+			    <http:endpoint service="test:MyConsumerService"
+					   endpoint="HelloWebService"
+					   role="consumer" 
+					   targetService="test:IHelloWebService" 
+					   locationURI="http://localhost:8081/services/HelloWebService" 
+					   soap="true" 
+					   defaultMep="http://www.w3.org/2004/08/wsdl/in-out" 
+					   wsdlResource="http://localhost:8080/AxisEndToEnd/services/HelloWebService?WSDL" />
+
+
+</beans>

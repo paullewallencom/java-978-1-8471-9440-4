@@ -1,0 +1,92 @@
+<project name="ejb20-basic-statelessSession" default="all" basedir=".">
+
+  <property file="../../../examples.properties"/>
+  
+  <property environment="env"/>
+  <property name="build.compiler" value="${compiler}"/>
+  <property name="source" value="."/>
+  <property name="build" value="${source}/build"/>
+  <property name="dist" value="${source}/dist"/>
+
+  <target name="all" depends="clean, init, compile_ejb, jar.ejb, appc, ear_app,
+    compile_client"/>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile
+    and copy the deployment descriptors into it-->
+    <mkdir dir="${build}"/>
+    <mkdir dir="${build}/META-INF"/>
+    <mkdir dir="${dist}"/>
+    <copy todir="${build}/META-INF">
+      <fileset dir="${source}">
+        <include name="ejb-jar.xml"/>
+        <include name="weblogic-ejb-jar.xml"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- Compile ejb classes into the build directory (jar preparation) -->
+  <target name="compile_ejb">
+    <javac srcdir="${source}" destdir="${build}"
+       includes="HelloWorldBI.java, HelloWorld.java, HelloWorldHome.java, HelloWorldEJB.java"/>
+  </target>
+
+  <!-- Update ejb jar file or create it if it doesn't exist, including XML 
+    deployment descriptors -->
+  <target name="jar.ejb" depends="compile_ejb">
+    <jar jarfile="${dist}/esb_slsb_basic_statelessSession.jar"
+      basedir="${build}"
+      update="yes">
+    </jar>
+  </target>
+
+  <target name="appc" depends="jar.ejb">
+    <wlappc debug="${debug}"
+      source="${dist}/esb_slsb_basic_statelessSession.jar"
+      />
+  </target>
+
+
+  <!-- Put the ejb into an ear, to be deployed from the ${apps.dir} dir -->
+  <target name="ear_app" depends="jar.ejb">
+    <ear earfile="${apps.dir}/esb_slsb_basic_statelessSession.ear" appxml="${source}/application.xml">
+      <fileset dir="${dist}" includes="esb_slsb_basic_statelessSession.jar"/>
+    </ear>
+  </target>
+
+  <!-- Compile client app into the clientclasses directory, and move the client jar file (created by appc) there as well -->
+  <target name="compile_client">
+    <move file="${user.dir}/esb_slsb_basic_statelessSession_client.jar" tofile="${client.classes.dir}/esb_slsb_basic_statelessSession_client.jar"/>
+    <javac srcdir="${source}"
+      destdir="${client.classes.dir}"
+      includes="Client.java"
+      classpath="${ex.classpath};${client.classes.dir}/esb_slsb_basic_statelessSession_client.jar"
+    />
+  </target>
+
+  <target name="make">
+    <javac srcdir="${source}"
+      destdir="${client.classes.dir}"
+      includes="Client.java"
+      classpath="${ex.classpath};${client.classes.dir}/esb_slsb_basic_statelessSession_client.jar"
+    />
+  </target>
+
+  <target name="clean">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+
+  <!-- Run the example -->
+  <target name="run">
+  <java classname="examples.webservices.basic.statelessSession.Client" fork="yes" failonerror="true">
+    <arg value="t3://localhost:${port}"/>
+    <classpath>
+      <pathelement path="${ex.classpath};${client.classes.dir}/esb_slsb_basic_statelessSession_client.jar"/>
+    </classpath>
+  </java>
+  </target>
+
+</project>

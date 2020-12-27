@@ -1,0 +1,84 @@
+<project name="full" default="all" basedir=".">
+
+  <property file="../../examples.properties"/>
+
+  <property name="src.dir" value="src" />
+  <property name="su.src.dir" value="su" />
+  <property name="sa.src.dir" value="sa" />
+  <property name="lib.dir" value="lib" />
+  <property name="build.dir" value="build" />
+  <property name="install.dir" value="install" />
+  <property name="deploy.dir" value="deploy" />
+  
+ <path id="javac.classpath">
+   <pathelement path="." />
+   <pathelement path="${build.dir}" />
+   <pathelement path="${servicemix.home}/conf" />
+   <fileset dir="${servicemix.home}/lib">
+	 <include name="**/*.jar" />
+   </fileset>
+ </path>
+ 
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${install.dir}"/>
+    <delete dir="${deploy.dir}"/>
+    <delete dir="wdir" />
+    <delete dir="data" />
+  </target>
+  
+  <target name="init" depends="clean">
+    <mkdir dir="${build.dir}" />
+    <mkdir dir="${install.dir}" />
+    <mkdir dir="${deploy.dir}" />
+  </target>
+
+  <target name="all" depends="clean, init, compile, callAll, copy" description="Setup all components">
+
+  </target>
+
+  <target name="clear" depends="clean">
+    <ant antfile="build.xml" dir="01_WebService20061231" target="clean" inheritAll="true" />
+    <ant antfile="build.xml" dir="02_WebService20070101" target="clean" inheritAll="true" />
+    <ant antfile="build.xml" dir="03_BindHttp" target="clean" inheritAll="true" />
+  </target>
+
+  <target name="compile" description="Compile all Java">
+    <javac srcdir="." destdir="${build.dir}" debug="on" source="1.4" target="1.4">
+      <include name="JMSClient20061231.java"/>
+      <include name="JMSClient20070101.java"/>
+      <classpath refid="javac.classpath"/>
+    </javac>
+  </target>
+
+  <target name="callAll" description="Setup all components">
+    <ant antfile="build.xml" dir="01_WebService20061231" target="all" inheritAll="true" />
+    <ant antfile="build.xml" dir="02_WebService20070101" target="all" inheritAll="true" />
+    <ant antfile="build.xml" dir="03_BindHttp" target="all" inheritAll="true" />
+  </target>
+
+  <target name="copy">
+    <copy todir="${install.dir}" overwrite="true">
+      <fileset dir="03_BindHttp/${install.dir}" includes="*.*" />
+    </copy>
+    <copy todir="${deploy.dir}" overwrite="true">
+      <fileset dir="03_BindHttp/${deploy.dir}" includes="*.*" />
+    </copy>
+
+  </target>
+
+  <target name="run1" description="Runs the example client">
+    <echo>Running example client</echo>
+    <java classname="JMSClient20061231" fork="yes" maxmemory="100M">
+      <classpath refid="javac.classpath"/>
+    </java>
+  </target>
+
+  <target name="run2" description="Runs the example client">
+    <echo>Running example client</echo>
+    <java classname="JMSClient20070101" fork="yes" maxmemory="100M">
+      <classpath refid="javac.classpath"/>
+    </java>
+  </target>
+
+</project>

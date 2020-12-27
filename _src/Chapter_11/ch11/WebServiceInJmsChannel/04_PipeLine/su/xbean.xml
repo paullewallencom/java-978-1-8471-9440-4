@@ -1,0 +1,19 @@
+<beans  xmlns:http="http://servicemix.apache.org/http/1.0" 
+        xmlns:eip="http://servicemix.apache.org/eip/1.0" 
+        xmlns:test="http://AxisEndToEnd.axis.apache.binildas.com">
+
+    <classpath>
+        <location>.</location>
+    </classpath>
+
+
+  <eip:pipeline service="test:pipeline" endpoint="pipeline">
+    <eip:transformer>
+      <eip:exchange-target service="test:IHelloWebService" />
+    </eip:transformer>
+    <eip:target>
+      <eip:exchange-target service="test:MyProviderService" />
+    </eip:target>
+  </eip:pipeline>
+
+</beans>

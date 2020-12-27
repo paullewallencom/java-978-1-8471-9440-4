@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://xbean.org/schemas/spring/1.0" 
+      xmlns:sm="http://servicemix.apache.org/config/1.0"
+      xmlns:test="http://cer.eip.servicemix.esb.binildas.com" 
+      xmlns:eip="http://servicemix.apache.org/eip/1.0" 
+      xmlns:jms="http://servicemix.apache.org/jms/1.0">
+
+	<classpath>
+		<location>.</location>
+	</classpath>
+
+  <import resource="classpath:jmx.xml" />
+  <import resource="classpath:jndi.xml" />
+  <import resource="classpath:security.xml" />
+  <import resource="classpath:tx.xml" />
+  <import resource="classpath:activemq.xml" />
+    
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="location" value="classpath:servicemix.properties" />
+  </bean>
+                          
+   <sm:container name="jbi"
+                 monitorInstallationDirectory="false"
+                 createMBeanServer="true"
+                 useMBeanServer="true">
+                 
+      <sm:activationSpecs>
+
+		<sm:activationSpec>
+		  <sm:component>
+			<jms:component>
+			  <jms:endpoints>
+				  <jms:endpoint service="test:MyConsumerService"
+								endpoint="myConsumer"
+								role="consumer" 
+								soap="false" 
+								targetService="test:contentEnricher" 
+								defaultMep="http://www.w3.org/2004/08/wsdl/in-only"
+								destinationStyle="queue"
+								jmsProviderDestinationName="queue/A"
+								connectionFactory  ="#connectionFactory" />
+
+				  <jms:endpoint service="test:MyProviderService"
+								endpoint="myProvider"
+								role="provider" 
+								soap="false" 
+								destinationStyle="queue"
+								jmsProviderDestinationName="queue/B"
+								connectionFactory="#connectionFactory" />
+			  </jms:endpoints>
+			</jms:component>
+		  </sm:component>
+		</sm:activationSpec>    
+
+			  <sm:activationSpec id="servicemix-eip">
+				<sm:component>
+				  <eip:component>
+					<eip:endpoints>
+
+					<eip:content-enricher service="test:contentEnricher" endpoint="endpoint" enricherElementName="test:subject" requestElementName="test:principal" resultElementName="test:credential">
+					  <eip:enricherTarget>
+						<eip:exchange-target service="test:contentAppender" />
+					  </eip:enricherTarget>
+					  <eip:target>
+						<eip:exchange-target service="test:MyProviderService" />
+					  </eip:target>
+					</eip:content-enricher>
+
+					</eip:endpoints>
+				  </eip:component>
+				</sm:component>
+			  </sm:activationSpec>
+
+            <sm:activationSpec componentName="contentAppender" service="test:contentAppender">
+                <sm:component>
+                    <bean xmlns="http://xbean.org/schemas/spring/1.0" class="ContentAppender" >
+                        <constructor-arg ref="jbi"/>
+                    </bean>
+                </sm:component>
+            </sm:activationSpec>
+
+      </sm:activationSpecs>
+   </sm:container>                
+
+  <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL" value="tcp://localhost:61616" />
+  </bean>
+
+
+</beans>

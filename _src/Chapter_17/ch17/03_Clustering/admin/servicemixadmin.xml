@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:sm="http://servicemix.apache.org/config/1.0" 
+		xmlns:amq="http://activemq.org/config/1.0" 
+		xmlns:eip="http://servicemix.apache.org/eip/1.0" 
+		xmlns:jms="http://servicemix.apache.org/jms/1.0" 
+	     xmlns:foo="http://servicemix.org/demo/">
+
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="location" value="classpath:servicemix.properties" />
+  </bean>
+    
+  <import resource="classpath:jmx.xml" />
+  <import resource="classpath:jndi.xml" />
+  <import resource="classpath:security.xml" />
+  <import resource="classpath:tx.xml" />
+  <import resource="classpath:activemq.xml" />
+
+
+  <bean id="jndi" class="org.apache.xbean.spring.jndi.SpringInitialContextFactory" 
+        factory-method="makeInitialContext" singleton="true" />
+
+	<!-- the JBI container -->
+	<sm:container id="jbi" 
+                name="admin" 
+                flowName="jms?jmsURL=tcp://localhost:61616" 
+                useMBeanServer="true"
+		            createMBeanServer="true" 
+                rmiPort="1111">
+
+		<sm:activationSpecs>
+
+		<sm:activationSpec>
+		  <sm:component>
+			<jms:component>
+			  <jms:endpoints>
+				  <jms:endpoint service="test:MyConsumerService"
+								endpoint="myConsumer"
+								role="consumer" 
+								soap="false" 
+								targetService="foo:recipients" 
+								defaultMep="http://www.w3.org/2004/08/wsdl/in-only"
+								destinationStyle="queue"
+								jmsProviderDestinationName="queue/A"
+								connectionFactory  ="#connectionFactory" />
+
+				  <!--jms:endpoint service="test:MyProviderService"
+								endpoint="myProvider"
+								role="provider" 
+								soap="false" 
+								destinationStyle="queue"
+								jmsProviderDestinationName="queue/B"
+								connectionFactory="#connectionFactory" /-->
+			  </jms:endpoints>
+			</jms:component>
+		  </sm:component>
+		</sm:activationSpec>    
+
+        <!--sm:activationSpec componentName="httpReceiver"     
+                           service="foo:httpBinding"
+                           endpoint="httpReceiver"
+                           destinationService="foo:recipients">
+          <sm:component>
+            <bean class="org.apache.servicemix.components.http.HttpConnector">
+                  <property name="host" value="localhost"/>
+                  <property name="port" value="8912"/>
+            </bean>
+          </sm:component>
+        </sm:activationSpec-->
+
+			  <sm:activationSpec id="servicemix-eip">
+				<sm:component>
+				  <eip:component>
+					<eip:endpoints>
+
+					  <eip:static-recipient-list service="foo:recipients" endpoint="endpoint">
+						<eip:recipients>
+						  <eip:exchange-target service="foo:receiver1" />
+						  <eip:exchange-target service="foo:receiver2" />
+						  <eip:exchange-target service="foo:receiver3" />
+						</eip:recipients>
+					  </eip:static-recipient-list>
+
+					</eip:endpoints>
+				  </eip:component>
+				</sm:component>
+			  </sm:activationSpec>
+
+		</sm:activationSpecs>
+	</sm:container>
+	
+  <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
+     <property name="config" value="classpath:activemq.xml"/>
+   </bean>
+
+
+  <bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
+    <property name="connectionFactory">
+    
+            <ref bean="connectionFactory"/>
+    
+    
+      <!--ean class="org.apache.activemq.spring.ActiveMQConnectionFactory">
+        <property name="brokerURL">
+          <value>tcp://localhost:61616</value>
+        </property>
+      </bean-->
+    </property>
+  </bean>
+
+  <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL" value="tcp://localhost:61616" />
+  </bean>
+
+</beans>

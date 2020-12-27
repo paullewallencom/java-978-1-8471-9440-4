@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2006 rel. 3 sp1 (http://www.altova.com) by Jasper (CS&S) -->
+<beans xmlns:sm="http://servicemix.apache.org/config/1.0" xmlns:demo="http://www.binildas.com/esb/LightWeightOrPojo">
+
+
+	<classpath>
+		<location>.</location>
+	</classpath>
+	
+	<sm:serviceunit id="jbi">
+		<sm:activationSpecs>
+		
+			<sm:activationSpec componentName="interceptor" endpoint="interceptor" service="demo:interceptor">
+				<sm:component>
+				
+					<bean class="com.binildas.esb.javasource.HttpInterceptor">
+                        <property name="name">
+                            <value>Interceptor-1</value>
+                        </property>
+                        <property name="namespaceURI">
+                            <value>http://www.binildas.com/esb/LightWeightOrPojo</value>
+                        </property>
+                        <property name="localPart">
+                            <value>inspector</value>
+                        </property>
+					</bean>
+					
+				</sm:component>
+			</sm:activationSpec>
+			
+			
+			<sm:activationSpec componentName="inspector" endpoint="inspector" service="demo:inspector">
+				<sm:component>
+				
+					<bean class="com.binildas.esb.javasource.XStreamInspector">
+                        <property name="name">
+                            <value>Inspector-1</value>
+                        </property>
+					</bean>
+					
+				</sm:component>
+			</sm:activationSpec>
+			
+			
+		</sm:activationSpecs>
+	</sm:serviceunit>
+</beans>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+     
+    <import resource="classpath:org/codehaus/xfire/spring/xfire.xml"/>
+
+    <bean id="jndiTemplate" class="org.springframework.jndi.JndiTemplate">
+        <property name="environment">
+            <props>
+                <prop key="java.naming.factory.initial">
+                    weblogic.jndi.WLInitialContextFactory
+                </prop>
+                <prop key="java.naming.provider.url">
+                    t3://localhost:7001
+                </prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="sessionEjbProxy" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
+        <property name="jndiName">
+            <value>esb-statelessSession-TraderHome</value>
+        </property>
+        <property name="jndiTemplate">
+            <ref bean="jndiTemplate"/>
+        </property>
+        <property name="resourceRef">
+            <value>false</value>
+        </property>
+        <property name="lookupHomeOnStartup">
+            <value>false</value>
+        </property>
+        <property name="businessInterface">
+            <value>examples.webservices.basic.statelessSession.HelloWorldBI</value>
+        </property>
+    </bean>
+
+    <bean id="webService" class="org.codehaus.xfire.spring.remoting.XFireExporter">
+        <property name="style">
+            <value>rpc</value>
+        </property>
+        <property name="use">
+            <value>encoded</value>
+        </property>
+        <property name="serviceFactory">
+            <ref bean="xfire.serviceFactory"/>
+        </property>
+        <property name="xfire">
+            <ref bean="xfire"/>
+        </property>
+        <property name="serviceBean">
+            <ref bean="sessionEjbProxy"/>
+        </property>
+        <property name="serviceInterface">
+            <value>examples.webservices.basic.statelessSession.HelloWorldBI</value>
+        </property>
+    </bean>
+
+     <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="urlMap">
+            <map>
+                <entry key="/InvokeService">
+                    <ref bean="webService"/>
+                </entry>
+            </map>
+        </property>
+    </bean>    
+    
+</beans>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://voipservice.serviceassembly.servicemix.esb.binildas.com" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://voipservice.serviceassembly.servicemix.esb.binildas.com" xmlns:intf="http://voipservice.serviceassembly.servicemix.esb.binildas.com" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema targetNamespace="http://voipservice.serviceassembly.servicemix.esb.binildas.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+   <complexType name="CreditCardTO">
+    <sequence>
+     <element name="cardNumber" nillable="true" type="soapenc:string"/>
+     <element name="cardType" nillable="true" type="soapenc:string"/>
+     <element name="validTill" nillable="true" type="soapenc:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="AddressTO">
+    <sequence>
+     <element name="city" nillable="true" type="soapenc:string"/>
+     <element name="houseNumber" nillable="true" type="soapenc:string"/>
+     <element name="street" nillable="true" type="soapenc:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="CustomerTO">
+    <sequence>
+     <element name="address" nillable="true" type="impl:AddressTO"/>
+     <element name="firstName" nillable="true" type="soapenc:string"/>
+     <element name="lastName" nillable="true" type="soapenc:string"/>
+     <element name="name" nillable="true" type="soapenc:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="ServiceParamTO">
+    <sequence>
+     <element name="creditCard" nillable="true" type="impl:CreditCardTO"/>
+     <element name="customer" nillable="true" type="impl:CustomerTO"/>
+    </sequence>
+   </complexType>
+   <complexType name="CreditProfileTO">
+    <sequence>
+     <element name="creditAuthorisedStatus" type="xsd:int"/>
+     <element name="creditScore" type="xsd:int"/>
+     <element name="customer" nillable="true" type="impl:CustomerTO"/>
+     <element name="valid" type="xsd:boolean"/>
+    </sequence>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="provisionServiceResponse">
+
+      <wsdl:part name="provisionServiceReturn" type="impl:CreditProfileTO"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="provisionServiceRequest">
+
+      <wsdl:part name="in0" type="impl:ServiceParamTO"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="IVoip">
+
+      <wsdl:operation name="provisionService" parameterOrder="in0">
+
+         <wsdl:input message="impl:provisionServiceRequest" name="provisionServiceRequest"/>
+
+         <wsdl:output message="impl:provisionServiceResponse" name="provisionServiceResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="VoipServiceSoapBinding" type="impl:IVoip">
+
+      <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="provisionService">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="provisionServiceRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://voipservice.serviceassembly.servicemix.esb.binildas.com" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="provisionServiceResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://voipservice.serviceassembly.servicemix.esb.binildas.com" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="IVoipService">
+
+      <wsdl:port binding="impl:VoipServiceSoapBinding" name="VoipService">
+
+         <wsdlsoap:address location="http://localhost:8080/voipservice/services/VoipService"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

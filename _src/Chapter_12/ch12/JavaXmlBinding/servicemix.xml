@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2006 rel. 3 sp1 (http://www.altova.com) by Jasper (CS&S) -->
+<beans xmlns:sm="http://servicemix.apache.org/config/1.0" xmlns:demo="http://www.binildas.com/esb/LightWeightOrPojo">
+
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="location" value="classpath:servicemix.properties" />
+  </bean>
+
+  <import resource="classpath:jmx.xml" />
+  <import resource="classpath:jndi.xml" />
+  <import resource="classpath:security.xml" />
+  <import resource="classpath:tx.xml" />
+
+
+	<!-- the JBI container -->
+	<sm:container id="jbi" rootDir="./wdir" installationDirPath="./install" deploymentDirPath="./deploy" flowName="seda" monitorInstallationDirectory="true"
+                 createMBeanServer="true"
+                 useMBeanServer="true">
+	
+		<sm:activationSpecs>
+		
+			<sm:activationSpec componentName="httpReceiver" service="bt:httpBinding" endpoint="httpReceiver" destinationService="demo:interceptor">
+				<sm:component>
+					<bean class="org.apache.servicemix.components.http.HttpConnector">
+						<property name="host" value="127.0.0.1"/>
+						<property name="port" value="8912"/>
+					</bean>
+				</sm:component>
+			</sm:activationSpec>
+			
+		</sm:activationSpecs>
+		
+	</sm:container>
+</beans>

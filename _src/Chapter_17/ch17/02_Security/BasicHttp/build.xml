@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<project name="apps" default="all" basedir=".">
+
+  <target name="all" depends="clean">
+  </target>
+
+
+  <target name="clean">
+    <delete dir="data"/>
+    <delete dir="wdir"/>
+  </target>
+  
+  <target name="init" depends="clean">
+  </target>
+
+  <target name="clear" depends="clean">
+  </target>
+
+</project>
+

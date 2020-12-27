@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2006 rel. 3 sp1 (http://www.altova.com) by Jasper (CS&S) -->
+<beans xmlns:sm="http://servicemix.apache.org/config/1.0">
+    
+  <import resource="classpath:jmx.xml" />
+  <import resource="classpath:jndi.xml" />
+  <import resource="classpath:security.xml" />
+  <import resource="classpath:tx.xml" />
+    
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="location" value="classpath:servicemix.properties" />
+  </bean>
+
+    
+    <sm:container id="jbi" MBeanServer="#jmxServer" useMBeanServer="true" createMBeanServer="true" rootDir="./wdir" installationDirPath="./install" deploymentDirPath="./deploy" flowName="seda">
+    
+    <sm:activationSpecs>
+        
+    </sm:activationSpecs>
+       
+    </sm:container>
+
+</beans>

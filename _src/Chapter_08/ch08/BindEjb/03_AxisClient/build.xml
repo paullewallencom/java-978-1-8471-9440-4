@@ -1,0 +1,103 @@
+<?xml version="1.0" ?>
+
+<project default="all"> 
+
+    <property file="../../../examples.properties"/>
+    
+    <property name="build" value="build"/>
+    <property name="dist" value="dist"/>
+    <property name="lib" value="lib"/>
+    <property name="src" value="src"/>
+    <property name="gensrc" value="gensrc"/>
+    <property name="config" value="config"/>
+    
+    <property name="wsdl" value="HelloWebService.wsdl"/>
+    
+    <property name="interface.package" value="samples"/>
+    <property name="interface.class" value="HelloServiceBI"/>
+    
+    <path id="classpath">
+        <pathelement path="../01_Ejb/build"/>
+        <pathelement path="."/>
+        <fileset dir="${axis.home}/lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>         
+        
+    <taskdef name="wsdl2java" classname="org.apache.axis.tools.ant.wsdl.Wsdl2javaAntTask" loaderref="axis" >
+        <classpath refid="classpath"/>
+    </taskdef>
+
+  <taskdef name="java2wsdl" classname="org.apache.axis.tools.ant.wsdl.Java2WsdlAntTask"
+    loaderref="axis" >
+        <classpath refid="classpath"/>
+  </taskdef>
+       
+    <target name="all" depends="clean, init, wsdl2java, delete, compileclient">
+    </target>
+
+    <target name="clean">
+        <delete dir="${build}"/>
+        <delete dir="${dist}"/>
+        <delete dir="${lib}"/>
+        <delete dir="${gensrc}"/>
+    </target>
+
+    <target name="init">
+        <mkdir dir="${build}"/>
+    </target>
+
+<target name="java2wsdl">
+    <java classname="org.apache.axis.wsdl.Java2WSDL" fork="true" failonerror="true">
+        <arg value="-o"/>
+        <arg value="${wsdl}"/>
+        <arg value="-lhttp://localhost:8192/Services/HelloWebService"/>
+        <arg value="-n"/>
+        <arg value="http://www.binildas.com/esb/bindejb"/>
+        <arg value="${interface.package}.${interface.class}"/>
+        <classpath>
+            <path refid="classpath"/>
+            <pathelement location="${build}"/>
+        </classpath>
+    </java>
+</target>
+
+    <target name="wsdl2java">
+        <java classname="org.apache.axis.wsdl.WSDL2Java" fork="true" failonerror="true">
+            <arg value="-o"/>
+            <arg value="${src}"/>
+            <arg value="-x"/>
+            <arg value="http://io.java"/>
+            <arg value="http://localhost:8192/Services/HelloWebService/main.wsdl"/>
+            <!--arg value="HelloWebService.wsdl"/-->
+            <classpath>
+                <path refid="classpath"/>
+                <pathelement location="${build}"/>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="delete" depends="wsdl2java">
+        <delete>
+            <fileset dir="${src}" includes="**/IOException.java"/>
+        </delete>
+    </target>
+
+    <target name="compileclient">
+        <javac srcdir="${src}" destdir="build" classpathref="classpath"/>
+    </target>
+    
+    <target name="run">
+        <java classname="samples.Client" fork="true" failonerror="true">
+            <arg value="http://localhost:8192/Services/HelloWebService/main.wsdl"/>
+            <!--arg value="HelloWebService.wsdl"/-->
+            <arg value="http://binildas.com/esb/bindejb"/>
+            <arg value="HelloServiceBIService"/>
+                <classpath>
+                    <path refid="classpath"/>
+                    <pathelement location="build"/>
+            </classpath>   
+        </java>
+    </target>
+    
+</project>

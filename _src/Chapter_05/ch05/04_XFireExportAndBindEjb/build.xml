@@ -1,0 +1,15 @@
+<project name="Interceptor" default="clear" basedir=".">
+	
+    <property file="../../examples.properties"/>
+	
+  <target name="clean">
+    <ant antfile="build.xml" dir="ejb" target="clean" inheritAll="true" />
+    <ant antfile="build.xml" dir="XFireBind" target="clean" inheritAll="true" />
+  </target>
+  
+  <target name="clear" depends="clean">
+    <ant antfile="build.xml" dir="ejb" target="clean" inheritAll="true" />
+    <ant antfile="build.xml" dir="XFireBind" target="clean" inheritAll="true" />
+  </target>
+
+</project>

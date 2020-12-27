@@ -1,0 +1,15 @@
+<beans  xmlns:jsr181="http://servicemix.apache.org/jsr181/1.0"
+        xmlns:test="http://binildas.com/esb/jsrpojo">
+
+    <classpath>
+        <location>.</location>
+    </classpath>
+
+  <jsr181:endpoint annotations="none" service="test:destinationHelloService" serviceInterface="samples.DestinationHelloServiceBI">
+    <jsr181:pojo>
+      <bean class="samples.DestinationHelloServicePojo">
+      </bean>
+    </jsr181:pojo>
+  </jsr181:endpoint>
+
+</beans>

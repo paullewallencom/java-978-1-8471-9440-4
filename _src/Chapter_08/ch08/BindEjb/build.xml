@@ -1,0 +1,17 @@
+<project name="Interceptor" default="clear" basedir=".">
+	
+    <property file="../../examples.properties"/>
+	
+  <target name="clean">
+    <ant antfile="build.xml" dir="01_Ejb" target="clean" inheritAll="true" />
+    <ant antfile="build.xml" dir="02_BindInEsb" target="clean" inheritAll="true" />
+    <ant antfile="build.xml" dir="03_AxisClient" target="clean" inheritAll="true" />
+  </target>
+  
+  <target name="clear" depends="clean">
+    <ant antfile="build.xml" dir="01_Ejb" target="clean" inheritAll="true" />
+    <ant antfile="build.xml" dir="02_BindInEsb" target="clean" inheritAll="true" />
+    <ant antfile="build.xml" dir="03_AxisClient" target="clean" inheritAll="true" />
+  </target>
+
+</project>

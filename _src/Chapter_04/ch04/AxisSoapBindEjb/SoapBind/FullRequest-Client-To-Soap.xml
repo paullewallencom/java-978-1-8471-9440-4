@@ -1,0 +1,14 @@
+POST /soap/servlet/rpcrouter HTTP/1.0
+Host: localhost:8082
+Content-Type: text/xml; charset=utf-8
+Content-Length: 458
+SOAPAction: ""
+
+<?xml version='1.0' encoding='UTF-8'?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<SOAP-ENV:Body>
+<ns1:hello xmlns:ns1="urn:ejbhello" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+<phrase xsi:type="xsd:string">what&apos;s your name?</phrase>
+</ns1:hello>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

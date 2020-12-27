@@ -1,0 +1,25 @@
+<beans  xmlns:jsr181="http://servicemix.apache.org/jsr181/1.0"
+        xmlns:test="http://binildas.com/esb/jsrpojo">
+
+    <classpath>
+        <location>.</location>
+    </classpath>
+
+	<jsr181:endpoint annotations="none" service="test:bridgeService" serviceInterface="samples.BridgeHelloServiceBI">
+		<jsr181:pojo>
+			<bean class="samples.BridgeHelloServicePojo">
+			
+				<property name="context" ref="context" />
+
+				<property name="namespaceURI">
+					<value>http://binildas.com/esb/jsrpojo</value>
+				</property>
+				<property name="localPart">
+					<value>destinationHelloService</value>
+				</property>
+				
+			</bean>
+		</jsr181:pojo>
+	</jsr181:endpoint>
+
+</beans>

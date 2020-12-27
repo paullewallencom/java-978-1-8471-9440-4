@@ -1,0 +1,17 @@
+<beans  xmlns:http="http://servicemix.apache.org/http/1.0" 
+        xmlns:test="http://binildas.com/esb/jsrpojo">
+
+    <classpath>
+        <location>.</location>
+    </classpath>
+
+
+    <http:endpoint service="test:PojoWebService"
+                   endpoint="PojoWebServiceEP"
+                   role="consumer" 
+                   targetService="test:bridgeService" 
+                   locationURI="http://localhost:8081/services/PojoService" 
+                   soap="true" 
+                   defaultMep="http://www.w3.org/2004/08/wsdl/in-out" />
+
+</beans>

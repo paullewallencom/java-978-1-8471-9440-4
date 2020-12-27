@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://AxisEndToEnd.axis.apache.binildas.com" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://AxisEndToEnd.axis.apache.binildas.com" xmlns:intf="http://AxisEndToEnd.axis.apache.binildas.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://AxisEndToEnd.axis.apache.binildas.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <element name="hello">
+    <complexType>
+     <sequence>
+      <element name="in0" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="helloResponse">
+    <complexType>
+     <sequence>
+      <element name="helloReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="helloRequest">
+
+      <wsdl:part element="impl:hello" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="helloResponse">
+
+      <wsdl:part element="impl:helloResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="IHelloWeb">
+
+      <wsdl:operation name="hello">
+
+         <wsdl:input message="impl:helloRequest" name="helloRequest"/>
+
+         <wsdl:output message="impl:helloResponse" name="helloResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="HelloWebServiceSoapBinding" type="impl:IHelloWeb">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="hello">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="helloRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="helloResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="IHelloWebService">
+
+      <wsdl:port binding="impl:HelloWebServiceSoapBinding" name="HelloWebService">
+
+         <wsdlsoap:address location="http://localhost:8080/AxisEndToEnd/services/HelloWebService"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

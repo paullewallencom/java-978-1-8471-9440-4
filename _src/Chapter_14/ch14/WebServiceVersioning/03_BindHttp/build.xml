@@ -1,0 +1,74 @@
+<!-- edited with XMLSpy v2006 rel. 3 sp1 (http://www.altova.com) by Jasper (CS&S) -->
+<project name="httpbind" default="all" basedir=".">
+
+    <property file="../../../examples.properties"/>
+
+  <property name="build.dir" value="build" />
+  <property name="src.dir" value="src" />
+  <property name="su.src.dir" value="su" />
+  <property name="sa.src.dir" value="sa" />
+  <property name="lib.dir" value="lib" />
+  <property name="install.dir" value="install" />
+  <property name="deploy.dir" value="deploy" />
+  
+ 
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${install.dir}"/>
+    <delete dir="${deploy.dir}"/>
+    <delete dir="wdir" />
+    <delete dir="data" />
+  </target>
+  
+  <target name="init" depends="clean">
+    <mkdir dir="${build.dir}" />
+    <path id="javac.classpath">
+      <pathelement path="${build.dir}" />
+      <pathelement path="${servicemix.home}/conf" />
+      <fileset dir="${servicemix.home}/lib">
+        <include name="**/*.jar" />
+      </fileset>
+      <fileset dir="${lib.dir}">
+        <include name="**/*.jar" />
+      </fileset>
+    </path>
+  </target>
+  
+  <target name="build-components" depends="init" description="Build components">
+    <javac srcdir="${src.dir}" destdir="${build.dir}" debug="on" source="1.5" target="1.5">
+      <classpath refid="javac.classpath" />
+    </javac>
+  </target>
+  
+  <target name="build-su" depends="build-components" description="Build the service unit">
+    <zip destfile="${build.dir}/${ant.project.name}-su.zip">
+      <fileset dir="${build.dir}" />
+      <fileset dir="${su.src.dir}" />
+    </zip>
+  </target>
+  
+  <target name="build-sa" depends="build-su" description="Build the service assembly">
+    <zip destfile="${build.dir}/${ant.project.name}-sa.zip">
+      <fileset dir="${build.dir}" includes="*.zip" />
+      <fileset dir="${sa.src.dir}" />
+    </zip>
+  </target>
+  
+  <target name="all" depends="build-sa" description="Setup servicemix">
+    <mkdir dir="${install.dir}" />
+    <mkdir dir="${deploy.dir}" />
+    <copy todir="${install.dir}" overwrite="true">
+      <fileset dir="${servicemix.home}/components" includes="*lwcontainer*" />
+      <fileset dir="${servicemix.home}/components" includes="*shared*" />
+      <fileset dir="${servicemix.home}/components" includes="*http*" />
+    </copy>
+    <copy todir="${deploy.dir}" overwrite="true">
+      <fileset dir="${build.dir}" includes="${ant.project.name}-sa.zip" />
+    </copy>
+    <copy todir="${servicemix.home}/lib/optional" overwrite="true">
+      <fileset dir="${lib.dir}" includes="*.jar" />
+    </copy>
+
+  </target>
+  
+</project>

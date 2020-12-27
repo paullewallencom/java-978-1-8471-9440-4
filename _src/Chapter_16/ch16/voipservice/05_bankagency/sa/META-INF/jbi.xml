@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jbi xmlns="http://java.sun.com/xml/ns/jbi" version="1.0">
+  <service-assembly>
+    <identification>
+      <name>BankAgencyAssembly</name>
+      <description>BankAgency Service Assembly</description>
+    </identification>
+    <service-unit>
+      <identification>
+        <name>BankAgency</name>
+        <description>BankAgency Service Unit</description>
+      </identification>
+      <target>
+        <artifacts-zip>bankagency-su.zip</artifacts-zip>
+        <component-name>servicemix-lwcontainer</component-name>
+      </target>
+    </service-unit>
+  </service-assembly>
+</jbi>

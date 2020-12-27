@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2006 rel. 3 sp1 (http://www.altova.com) by Jasper (CS&S) -->
+<beans xmlns:sm="http://servicemix.apache.org/config/1.0" xmlns:binil="http://www.binildas.com/voipservice">
+
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="location" value="classpath:servicemix.properties" />
+  </bean>
+
+	<classpath>
+		<location>.</location>
+	</classpath>
+    
+  <import resource="classpath:tx.xml" />
+  <import resource="classpath:jmx.xml" />
+  <import resource="classpath:jndi.xml" />
+  <import resource="classpath:activemq.xml" />
+  <import resource="classpath:security.xml" />
+
+
+    <!-- the JBI container -->
+    <sm:container id="jbi" rootDir="./wdir" installationDirPath="./install" deploymentDirPath="./deploy" flowName="seda">
+    
+        <sm:activationSpecs>
+            <!-- Create a http server binding on port 8912  and have it forward to the binil:broker -->
+            <sm:activationSpec componentName="httpReceiver" service="binil:httpBinding" endpoint="httpReceiver" destinationService="binil:broker">
+                <sm:component>
+                    <bean class="org.apache.servicemix.components.http.HttpConnector">
+                        <property name="host" value="127.0.0.1"/>
+                        <property name="port" value="8912"/>
+                    </bean>
+                </sm:component>
+            </sm:activationSpec>
+        </sm:activationSpecs>
+        
+    </sm:container>
+
+</beans>

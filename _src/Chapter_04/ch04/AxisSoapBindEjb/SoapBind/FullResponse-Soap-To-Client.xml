@@ -1,0 +1,17 @@
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Set-Cookie: JSESSIONID=929DAB0C201F82C9B3F575C8276692A1; Path=/soap
+Content-Type: text/xml;charset=utf-8
+Content-Length: 523
+Date: Thu, 26 Oct 2006 08:20:23 GMT
+Connection: close
+
+<?xml version='1.0' encoding='UTF-8'?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<SOAP-ENV:Body>
+<ns1:helloResponse xmlns:ns1="urn:ejbhello" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+<return xsi:type="xsd:string">From HelloServiceBean : HELLO!! You just said :what&apos;s your name?</return>
+</ns1:helloResponse>
+
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

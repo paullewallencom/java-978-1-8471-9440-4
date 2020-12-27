@@ -1,0 +1,169 @@
+<?xml version="1.0" ?>
+
+<project default="deploy"> 
+
+    <property file="../../../examples.properties"/>
+
+    <property name="build" value="build"/>
+    <property name="dist" value="dist"/>
+    <property name="lib" value="lib"/>
+    <property name="src" value="src"/>
+    <property name="gensrc" value="gensrc"/>
+    <property name="config" value="config"/>
+    
+    <property name="webapp.name" value="AxisEndToEnd"/>
+    <property name="service.name" value="HelloWebService"/>
+    <property name="wsdl" value="HelloWebService.wsdl"/>
+    
+    <property name="interface.package" value="com.binildas.apache.axis.AxisEndToEnd"/>
+    <property name="interface.path" value="com/binildas/apache/axis/AxisEndToEnd"/>
+    <property name="interface.class" value="IHelloWeb"/>
+    
+    <property name="implement.package" value="com.binildas.apache.axis.AxisEndToEnd"/>
+    <property name="implement.path" value="com/binildas/apache/axis/AxisEndToEnd"/>
+    <property name="implement.class" value="HelloWebService"/>
+
+    <path id="classpath">
+        <pathelement path="./build"/>
+        <fileset dir="${axis.home}/lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>         
+        
+    <taskdef name="wsdl2java" classname="org.apache.axis.tools.ant.wsdl.Wsdl2javaAntTask" loaderref="axis" >
+        <classpath refid="classpath"/>
+    </taskdef>
+
+  <taskdef name="java2wsdl" classname="org.apache.axis.tools.ant.wsdl.Java2WsdlAntTask"
+    loaderref="axis" >
+        <classpath refid="classpath"/>
+  </taskdef>
+       
+    <target name="all" depends="clean, init, deploy">
+    </target>
+
+    <target name="clean">
+        <delete dir="${build}"/>
+        <delete dir="${dist}"/>
+        <delete dir="${lib}"/>
+        <delete dir="${gensrc}"/>
+    </target>
+
+    <target name="init">
+        <mkdir dir="${build}"/>
+        <mkdir dir="${dist}"/>
+        <mkdir dir="${lib}"/>
+        <mkdir dir="${gensrc}"/>
+    </target>
+
+    <target name="copy">
+        <copy todir="${lib}">
+            <fileset dir="${axis.home}/lib">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="precompile" depends="clean, init">
+        <javac srcdir="${src}" destdir="build" classpathref="classpath">
+                <exclude name="**/*Client*.java"/>
+        </javac>
+    </target>
+
+<target name="java2wsdl" depends="precompile">
+    <java classname="org.apache.axis.wsdl.Java2WSDL" fork="true" failonerror="true">
+        <arg value="-o"/>
+        <arg value="${wsdl}"/>
+        <arg value="-lhttp://localhost:8080/${webapp.name}/services/${service.name}"/>
+        <arg value="-yWRAPPED" />
+        <arg value="${interface.package}.${interface.class}"/>
+        <classpath>
+            <path refid="classpath"/>
+            <pathelement location="${build}"/>
+        </classpath>
+    </java>
+</target>
+
+    <target name="wsdl2java" depends="java2wsdl">
+        <java classname="org.apache.axis.wsdl.WSDL2Java" fork="true" failonerror="true">
+            <arg value="-o"/>
+            <arg value="${gensrc}"/>
+            <arg value="-s"/>
+            <arg value="-S"/>
+            <arg value="no"/>
+            <arg value="-c"/>
+            <arg value="${implement.package}.${implement.class}"/>
+            <arg value="${wsdl}"/>
+            <classpath>
+                <path refid="classpath"/>
+                <pathelement location="${build}"/>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="implement" depends="wsdl2java">
+    
+        <delete>
+            <fileset dir="${gensrc}/${implement.path}" includes="${implement.class}.java"/>
+        </delete>
+        
+        <copy todir="${gensrc}/${implement.path}" overwrite="ture">
+            <fileset dir="${src}/${implement.path}">
+                <include name="${implement.class}.java"/>           
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="compile" depends="implement">
+        <javac srcdir="${gensrc}" destdir="build" classpathref="classpath"/>
+    </target>
+
+    <target name="compileclient" depends="wsdl2java">
+        <javac srcdir="${src}" destdir="build" classpathref="classpath">
+                <include name="**/*Client*.java"/>
+        </javac>
+    </target>
+        
+    <target name="deploy" depends="compile, copy, compileclient">
+    
+        <move todir="${config}" flatten="yes">
+            <fileset dir="${gensrc}">
+                <include name="**/*.wsdd"/>           
+            </fileset>
+        </move>
+    
+        <java classname="org.apache.axis.utils.Admin" fork="true" failonerror="true" dir="config">
+            <arg value="server"/>
+            <arg file="config/deploy.wsdd" />
+            <classpath>
+                <path refid="classpath"/>
+                <pathelement location="build"/>
+            </classpath>        
+        </java>
+                        
+        <war destfile="dist/${webapp.name}.war" webxml="config/web.xml">
+            <webinf dir="config">               
+                <include name="server-config.wsdd"/>
+                <include name="spring-config.xml"/>
+            </webinf>
+            <lib dir="lib"/>                
+            <classes dir="build"/>          
+        </war>
+        
+        <!--delete dir="${lib}"/-->
+        
+    </target>       
+    
+    <target name="run">
+        <java classname="com.binildas.apache.axis.AxisEndToEnd.Client" fork="true" failonerror="true">
+            <arg value="http://localhost:8080/AxisEndToEnd/services/HelloWebService?WSDL"/>
+            <arg value="http://AxisEndToEnd.axis.apache.binildas.com"/>
+            <arg value="IHelloWebService"/>
+                <classpath>
+                    <path refid="classpath"/>
+                    <pathelement location="build"/>
+            </classpath>   
+        </java>
+    </target>
+
+</project>

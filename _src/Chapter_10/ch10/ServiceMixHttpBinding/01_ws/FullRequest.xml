@@ -1,0 +1,17 @@
+GET /AxisEndToEnd/services/HelloWebService?WSDL HTTP/1.1
+User-Agent: Java/1.6.0-rc
+Host: localhost:8082
+Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+Connection: keep-alive
+
+POST /AxisEndToEnd/services/HelloWebService HTTP/1.0
+Content-Type: text/xml; charset=utf-8
+Accept: application/soap+xml, application/dime, multipart/related, text/*
+User-Agent: Axis/1.4
+Host: localhost:8082
+Cache-Control: no-cache
+Pragma: no-cache
+SOAPAction: ""
+Content-Length: 507
+
+<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soapenv:Body><ns1:hello soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="http://AxisEndToEnd.axis.apache.binildas.com"><in0 xsi:type="soapenc:string" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">Binil</in0></ns1:hello></soapenv:Body></soapenv:Envelope>

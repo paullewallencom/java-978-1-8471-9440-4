@@ -1,0 +1,47 @@
+<project name="voipservice" default="call" basedir=".">
+
+  <property name="src.dir" value="src" />
+  <property name="su.src.dir" value="su" />
+  <property name="sa.src.dir" value="sa" />
+  <property name="lib.dir" value="lib" />
+  <property name="install.dir" value="install" />
+  <property name="deploy.dir" value="deploy" />
+  
+ 
+  <target name="clean">
+    <delete dir="${install.dir}"/>
+    <delete dir="${deploy.dir}"/>
+    <delete dir="wdir" />
+    <delete dir="data" />
+
+    <ant antfile="build.xml" dir="01_JsrProxy" target="clean" inheritAll="true" />
+    <ant antfile="build.xml" dir="02_HttpBind" target="clean" inheritAll="true" />
+  </target>
+  
+  <target name="init" depends="clean">
+    <mkdir dir="${install.dir}" />
+    <mkdir dir="${deploy.dir}" />
+  </target>
+
+  <target name="call" depends="clean, init, callAll, copy" description="Setup all components">
+
+  </target>
+
+  <target name="callAll" description="Setup all components">
+    <ant antfile="build.xml" dir="01_JsrProxy" target="all" inheritAll="true" />
+    <ant antfile="build.xml" dir="02_HttpBind" target="all" inheritAll="true" />
+  </target>
+
+  <target name="copy">
+    <copy todir="${install.dir}" overwrite="true">
+      <fileset dir="01_JsrProxy/${install.dir}" includes="*.*" />
+      <fileset dir="02_HttpBind/${install.dir}" includes="*.*" />
+    </copy>
+    <copy todir="${deploy.dir}" overwrite="true">
+      <fileset dir="01_JsrProxy/${deploy.dir}" includes="*.*" />
+      <fileset dir="02_HttpBind/${deploy.dir}" includes="*.*" />
+    </copy>
+
+  </target>
+
+</project>

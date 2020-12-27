@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://xbean.org/schemas/spring/1.0" 
+      xmlns:sm="http://servicemix.apache.org/config/1.0"
+      xmlns:test="http://xslt.servicemix.apache.binildas.com" 
+      xmlns:eip="http://servicemix.apache.org/eip/1.0" 
+      xmlns:jms="http://servicemix.apache.org/jms/1.0">
+
+	<classpath>
+		<location>.</location>
+	</classpath>
+
+  <import resource="classpath:jmx.xml" />
+  <import resource="classpath:jndi.xml" />
+  <import resource="classpath:security.xml" />
+  <import resource="classpath:tx.xml" />
+  <import resource="classpath:activemq.xml" />
+    
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="location" value="classpath:servicemix.properties" />
+  </bean>
+                          
+   <sm:container name="jbi"
+                 monitorInstallationDirectory="false"
+                 createMBeanServer="true"
+                 useMBeanServer="true">
+                 
+      <sm:activationSpecs>
+
+		<sm:activationSpec>
+		  <sm:component>
+			<jms:component>
+			  <jms:endpoints>
+				  <jms:endpoint service="test:MyConsumerService"
+								endpoint="myConsumer"
+								role="consumer" 
+								soap="false" 
+								targetService="test:xpathSplitter" 
+								defaultMep="http://www.w3.org/2004/08/wsdl/in-only"
+								destinationStyle="queue"
+								jmsProviderDestinationName="queue/A"
+								connectionFactory  ="#connectionFactory" />
+
+			  </jms:endpoints>
+			</jms:component>
+		  </sm:component>
+		</sm:activationSpec>    
+
+
+			  <sm:activationSpec id="servicemix-eip">
+				<sm:component>
+				  <eip:component>
+					<eip:endpoints>
+
+					  <eip:xpath-splitter service="test:xpathSplitter" endpoint="xpathSplitterEndpoint" 
+										  xpath="/hello/*" ><!--namespaceContext="#nsContext"-->
+						<eip:target>
+						  <eip:exchange-target service="my:trace" />
+						</eip:target>
+					  </eip:xpath-splitter>
+
+					</eip:endpoints>
+				  </eip:component>
+				</sm:component>
+			  </sm:activationSpec>
+
+            <sm:activationSpec componentName="trace" service="my:trace">
+                <sm:component>
+                    <bean class="org.apache.servicemix.components.util.TraceComponent" />
+                </sm:component>
+            </sm:activationSpec>
+
+      </sm:activationSpecs>
+   </sm:container>                
+
+  <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL" value="tcp://localhost:61616" />
+  </bean>
+
+
+</beans>

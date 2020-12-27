@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2006 rel. 3 sp1 (http://www.altova.com) by Jasper (CS&S) -->
+<beans 
+    xmlns:sm="http://servicemix.apache.org/config/1.0" 
+    xmlns:eip="http://servicemix.apache.org/eip/1.0"
+    xmlns:binil="http://www.binildas.com/voipservice">
+    <classpath>
+        <location>.</location>
+    </classpath>
+    <sm:serviceunit id="jbi">
+        <sm:activationSpecs>
+            <sm:activationSpec componentName="creditGateWay" endpoint="creditGateWay" service="binil:creditGateWay">
+                <sm:component>
+                    <bean class="com.binildas.esb.servicemix.serviceassembly.voipservice.CreditGateway">
+                        <property name="name">
+                            <value>Credit</value>
+                        </property>
+                        <property name="endPoints">
+                          <map>
+                            <entry key="creditAgency">
+                              <value>http://www.binildas.com/voipservice</value>
+                            </entry>
+                            <entry key="bankAgency">
+                              <value>http://www.binildas.com/voipservice</value>
+                            </entry>
+                          </map>
+                        </property>
+                    </bean>
+                </sm:component>
+            </sm:activationSpec>
+        </sm:activationSpecs>
+    </sm:serviceunit>
+</beans>

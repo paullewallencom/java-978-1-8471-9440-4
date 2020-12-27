@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+
+<project name="apps" default="all" basedir=".">
+
+    <property file="../../examples.properties"/>
+
+  <property name="root" value="." /> 
+
+    <path id="javac.classpath">
+      <pathelement path="."/>
+      <pathelement path="./managed1"/>
+      <pathelement path="./managed2"/>
+      <pathelement path="${servicemix.home}/conf"/>
+      <fileset dir="${servicemix.home}/lib">
+        <include name="**/*.jar"/>
+      </fileset>
+      <fileset dir="${servicemix.home}">
+        <include name="*.jar"/>
+      </fileset>
+    </path>
+  
+  <target name="all" depends="init, callAll, compile">
+  </target>
+
+
+  <target name="clean">
+    <delete dir="target"/>
+    <delete dir="rootDir"/>
+    <delete dir="data"/>
+	  <delete>
+		<fileset dir="." includes="**/*.class"/>
+	  </delete>
+  </target>
+
+  <target name="clear" depends="clean">
+    <ant antfile="build.xml" dir="admin" target="clean" inheritAll="true" />
+    <ant antfile="build.xml" dir="managed1" target="clean" inheritAll="true" />
+    <ant antfile="build.xml" dir="managed2" target="clean" inheritAll="true" />
+  </target>
+  
+  <target name="init" depends="clean">
+  </target>
+
+  <target name="compile" description="Compile all Java">
+    <javac srcdir="." destdir="." debug="on" source="1.4" target="1.4">
+      <classpath refid="javac.classpath"/>
+    </javac>
+  </target>
+
+  <target name="callAll" description="Setup all components">
+    <ant antfile="build.xml" dir="managed1" target="all" inheritAll="true" />
+    <ant antfile="build.xml" dir="managed2" target="all" inheritAll="true" />
+  </target>
+
+  <target name="run" description="Runs the example client">
+    <echo>Running example client</echo>
+    <java classname="JMSClient" fork="yes" maxmemory="100M">
+      <classpath refid="javac.classpath"/>
+    </java>
+  </target>
+
+</project>
+

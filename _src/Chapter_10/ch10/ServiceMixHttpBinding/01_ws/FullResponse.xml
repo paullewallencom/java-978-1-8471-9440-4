@@ -1,0 +1,81 @@
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: text/xml;charset=utf-8
+Transfer-Encoding: chunked
+Date: Wed, 22 Nov 2006 14:11:55 GMT
+
+875
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://AxisEndToEnd.axis.apache.binildas.com" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://AxisEndToEnd.axis.apache.binildas.com" xmlns:intf="http://AxisEndToEnd.axis.apache.binildas.com" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+
+   <wsdl:message name="helloRequest">
+
+      <wsdl:part name="in0" type="soapenc:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="helloResponse">
+
+      <wsdl:part name="helloReturn" type="soapenc:string"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="IHelloWeb">
+
+      <wsdl:operation name="hello" parameterOrder="in0">
+
+         <wsdl:input message="impl:helloRequest" name="helloRequest"/>
+
+         <wsdl:output message="impl:helloResponse" name="helloResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="HelloWebServiceSoapBinding" type="impl:IHelloWeb">
+
+      <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="hello">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="helloRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://AxisEndToEnd.axis.apache.binildas.com" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="helloResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://AxisEndToEnd.axis.apache.binildas.com" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="IHelloWebService">
+
+      <wsdl:port binding="impl:HelloWebServiceSoapBinding" name="HelloWebService">
+
+         <wsdlsoap:address location="http://localhost:8082/AxisEndToEnd/services/HelloWebService"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>
+
+0
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: text/xml;charset=utf-8
+Date: Wed, 22 Nov 2006 14:11:57 GMT
+Connection: close
+
+<?xml version="1.0" encoding="utf-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soapenv:Body><ns1:helloResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="http://AxisEndToEnd.axis.apache.binildas.com"><helloReturn xsi:type="soapenc:string" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">Return From Server</helloReturn></ns1:helloResponse></soapenv:Body></soapenv:Envelope>

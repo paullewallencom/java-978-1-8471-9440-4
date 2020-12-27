@@ -1,0 +1,65 @@
+<beans  xmlns:sm="http://servicemix.apache.org/config/1.0" 
+        xmlns:jsr181="http://servicemix.apache.org/jsr181/1.0" 
+        xmlns:http="http://servicemix.apache.org/http/1.0" 
+        xmlns:test="http://test">
+
+    <classpath>
+        <location>.</location>
+    </classpath>
+
+
+  <jsr181:endpoint annotations="none" service="test:echoService" serviceInterface="test.IHelloProxy">
+    <jsr181:pojo>
+      <bean class="test.HelloProxyService">
+        <property name="helloProxy">
+          <jsr181:proxy service="test:TargetService" context="#context" type="test.IHelloProxy" />
+        </property>
+      </bean>
+    </jsr181:pojo>
+  </jsr181:endpoint>
+
+  <jsr181:endpoint annotations="none" service="test:TargetService" serviceInterface="test.ITarget">
+    <jsr181:pojo>
+      <bean class="test.TargetService" >
+      
+        <constructor-arg type="com.binildas.apache.axis.AxisEndToEnd.IHelloWeb">
+            <ref bean="stub"/>
+        </constructor-arg>
+      
+      </bean>
+    </jsr181:pojo>
+  </jsr181:endpoint>
+
+  <!-- Ths is what we wanted, but JBI container cannot generate WSDL for Axis RPC API -->
+  <!--jsr181:endpoint annotations="none" service="test:TargetService" serviceInterface="com.binildas.apache.axis.AxisEndToEnd.IHelloWeb">
+    <jsr181:pojo>
+      <bean class="com.binildas.apache.axis.AxisEndToEnd.HelloWebServiceSoapBindingStub" >
+        <constructor-arg type="java.net.URL" index="0">
+            <ref bean="url"/>
+        </constructor-arg>
+        <constructor-arg type="javax.xml.rpc.Service" index="1">
+            <ref bean="serviceLocator"/>
+        </constructor-arg>
+      </bean>
+    </jsr181:pojo>
+  </jsr181:endpoint-->
+
+      <bean id="stub" class="com.binildas.apache.axis.AxisEndToEnd.HelloWebServiceSoapBindingStub">
+        <constructor-arg type="java.net.URL" index="0">
+            <ref bean="url"/>
+        </constructor-arg>
+        <constructor-arg type="javax.xml.rpc.Service" index="1">
+            <ref bean="serviceLocator"/>
+        </constructor-arg>
+      </bean>
+
+      <bean id="url" class="java.net.URL">
+        <constructor-arg>
+            <value>http://localhost:8080/AxisEndToEnd/services/HelloWebService</value>
+        </constructor-arg>
+      </bean>
+
+      <bean id="serviceLocator" class="com.binildas.apache.axis.AxisEndToEnd.IHelloWebServiceLocator">
+      </bean>
+
+</beans>

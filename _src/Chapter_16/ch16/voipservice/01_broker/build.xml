@@ -1,0 +1,103 @@
+<!-- edited with XMLSpy v2006 rel. 3 sp1 (http://www.altova.com) by Jasper (CS&S) -->
+<project name="broker" default="all" basedir=".">
+
+	<property file="../../../examples.properties"/>
+
+
+  <property name="build.dir" value="build" />
+  <property name="src.dir" value="src" />
+  <property name="su.src.dir" value="su" />
+  <property name="sa.src.dir" value="sa" />
+  <property name="lib.dir" value="lib" />
+  <property name="install.dir" value="install" />
+  <property name="deploy.dir" value="deploy" />
+  
+    <path id="javac.classpath">
+      <pathelement path="${build.dir}" />
+      <pathelement path="${servicemix.home}/conf" />
+      <fileset dir="${servicemix.home}/lib">
+        <include name="**/*.jar" />
+      </fileset>
+        <fileset dir="${xstream.home}/lib">
+            <include name="*.jar"/>
+        </fileset>
+      <fileset dir="${lib.dir}">
+        <include name="**/*.jar" />
+      </fileset>
+    </path>
+  
+  <target name="clear">
+    <delete dir="${build.dir}" />
+  </target>
+
+  <target name="init">
+    <mkdir dir="${build.dir}" />
+  </target>
+  
+	<target name="copy" depends="clear, init">
+		<copy todir="src">
+			<fileset dir="../00_voipservice/src">
+				<include name="**/*.java"/>
+				<exclude name="**/Client.java"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="delete">
+		<delete>
+			<fileset dir="${src.dir}">
+				<include name="**/*.java"/>
+				<exclude name="**/SyncVoipBroker.java"/>
+			</fileset>
+		</delete>
+	</target>
+  
+  <target name="build-components" depends="copy" description="Build components">
+    <javac srcdir="${src.dir}" destdir="${build.dir}" debug="on" source="1.4" target="1.4">
+      <classpath refid="javac.classpath" />
+    </javac>
+  </target>
+  
+  <target name="build-su" depends="build-components" description="Build the service unit">
+    <antcall target="delete" />
+    <zip destfile="${build.dir}/${ant.project.name}-su.zip">
+      <fileset dir="${build.dir}" />
+      <fileset dir="${su.src.dir}" />
+    </zip>
+  </target>
+  
+  <target name="build-sa" depends="build-su" description="Build the service assembly">
+    <zip destfile="${build.dir}/${ant.project.name}-sa.zip">
+      <fileset dir="${build.dir}" includes="*.zip" />
+      <fileset dir="${sa.src.dir}" />
+    </zip>
+  </target>
+  
+  <target name="all" depends="build-sa" description="Setup servicemix">
+  
+    <copy todir="../${install.dir}" overwrite="true">
+      <fileset dir="${servicemix.home}/components" includes="*lwcontainer*" />
+      <fileset dir="${servicemix.home}/components" includes="*shared*" />
+    </copy>
+    <copy todir="../${deploy.dir}" overwrite="true">
+      <fileset dir="${build.dir}" includes="${ant.project.name}-sa.zip" />
+    </copy>
+    <copy todir=".." overwrite="true">
+      <fileset dir="${lib.dir}" includes="*.jar" />
+      <fileset dir=".">
+        <include name="*.xml" />
+        <exclude name="build.xml" />
+      </fileset>
+    </copy>
+    
+  </target>
+
+    <target name="run">
+        <java classname="com.binildas.esb.servicemix.serviceassembly.voipservice.XStreamUtil" fork="true" failonerror="true">
+                <classpath>
+                    <path refid="javac.classpath"/>
+            </classpath>   
+        </java>
+    </target>
+ 
+</project>

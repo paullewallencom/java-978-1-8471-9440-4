@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:sm="http://servicemix.apache.org/config/1.0"
+            xmlns:eip="http://servicemix.apache.org/eip/1.0"
+            xmlns:http="http://servicemix.apache.org/http/1.0"
+            xmlns:jsr181="http://servicemix.apache.org/jsr181/1.0"
+            xmlns:my="http://binildas.com/esb/bindejb">
+
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="location" value="classpath:servicemix.properties" />
+  </bean>
+
+  <import resource="classpath:jmx.xml" />
+  <import resource="classpath:jndi.xml" />
+  <import resource="classpath:security.xml" />
+  <import resource="classpath:tx.xml" />
+
+    <sm:container id="jbi" useMBeanServer="true"
+        createMBeanServer="true">
+
+        <sm:activationSpecs>
+
+            <sm:activationSpec> 
+                <sm:component> 
+                    <http:component> 
+                        <http:endpoints> 
+                        
+							<http:endpoint service="my:HelloServiceBIService"
+								   endpoint="HelloServiceBI"
+								   role="consumer" 
+								   defaultOperation="hello" 
+								   targetService="my:jsrEjbEP" 
+								   targetEndpoint="jsrEjbEP" 
+								   locationURI="http://localhost:8192/Services/HelloWebService" 
+								   soap="true" 
+								   defaultMep="http://www.w3.org/2004/08/wsdl/in-out" 
+								    />
+                                            
+                                            
+                        </http:endpoints> 
+                    </http:component> 
+                </sm:component> 
+            </sm:activationSpec> 
+
+            <sm:activationSpec componentName="jsrEjbBC" service="my:jsrEjbBC" endpoint="jsrEjbBC">
+                <sm:component>
+                    <jsr181:component>
+                        <jsr181:endpoints>
+                            <jsr181:endpoint annotations="none" service="my:jsrEjbEP" endpoint="jsrEjbEP" serviceInterface="samples.HelloServiceBI">
+                                <jsr181:pojo>
+                                    <bean class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
+                                        <property name="jndiName" value="sample-statelessSession-TraderHome"/>
+                                        <property name="businessInterface" value="samples.HelloServiceBI"/>
+                                        <property name="jndiTemplate">
+                                            <ref bean="jndiTemplate"/>
+                                        </property>
+                                    </bean>
+                                </jsr181:pojo>
+                            </jsr181:endpoint> 
+                        </jsr181:endpoints>
+                    </jsr181:component>
+                </sm:component>
+            </sm:activationSpec>
+            
+        </sm:activationSpecs>
+    </sm:container>
+
+    <bean id="jndiTemplate" class="org.springframework.jndi.JndiTemplate">
+        <property name="environment">
+            <props>
+                <prop key="java.naming.factory.initial">
+                    weblogic.jndi.WLInitialContextFactory
+                </prop>
+                <prop key="java.naming.provider.url">
+                    t3://localhost:7001
+                </prop>
+            </props>
+        </property>
+    </bean>
+
+</beans>
+

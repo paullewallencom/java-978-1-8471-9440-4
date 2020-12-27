@@ -1,0 +1,42 @@
+<project name="voipservice" default="call" basedir=".">
+
+  <property file="../../examples.properties"/>
+
+  <property name="install.dir" value="install" />
+  <property name="deploy.dir" value="deploy" />
+
+  <target name="clean">
+  
+    <delete dir="${install.dir}" />
+    <delete dir="${deploy.dir}" />
+    <delete dir="wdir" />
+    <delete dir="data" />
+    
+  </target>
+
+  <target name="init">
+  
+    <mkdir dir="${install.dir}" />
+    <mkdir dir="${deploy.dir}" />
+    
+  </target>
+
+  <target name="clear" depends="clean">
+    <ant antfile="build.xml" dir="00_voipservice" target="clean" inheritAll="true" />
+    <ant antfile="build.xml" dir="01_broker" target="clear" inheritAll="true" />
+    <ant antfile="build.xml" dir="02_address" target="clear" inheritAll="true" />
+    <ant antfile="build.xml" dir="03_creditgateway" target="clear" inheritAll="true" />
+    <ant antfile="build.xml" dir="04_creditagency" target="clear" inheritAll="true" />
+    <ant antfile="build.xml" dir="05_bankagency" target="clear" inheritAll="true" />
+  </target>
+
+  <target name="call" depends="clean, init" description="Setup all components">
+    <ant antfile="build.xml" dir="00_voipservice" target="all" inheritAll="true" />
+    <ant antfile="build.xml" dir="01_broker" target="all" inheritAll="true" />
+    <ant antfile="build.xml" dir="02_address" target="all" inheritAll="true" />
+    <ant antfile="build.xml" dir="03_creditgateway" target="all" inheritAll="true" />
+    <ant antfile="build.xml" dir="04_creditagency" target="all" inheritAll="true" />
+    <ant antfile="build.xml" dir="05_bankagency" target="all" inheritAll="true" />
+  </target>
+
+</project>

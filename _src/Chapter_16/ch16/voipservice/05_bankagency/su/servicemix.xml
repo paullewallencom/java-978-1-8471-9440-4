@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2006 rel. 3 sp1 (http://www.altova.com) by Jasper (CS&S) -->
+<beans 
+    xmlns:sm="http://servicemix.apache.org/config/1.0" 
+    xmlns:eip="http://servicemix.apache.org/eip/1.0"
+    xmlns:binil="http://www.binildas.com/voipservice">
+    <classpath>
+        <location>.</location>
+    </classpath>
+    <sm:serviceunit id="jbi">
+        <sm:activationSpecs>
+            <sm:activationSpec componentName="bankAgency" endpoint="bankAgency" service="binil:bankAgency">
+                <sm:component>
+                    <bean class="com.binildas.esb.servicemix.serviceassembly.voipservice.BankAgency">
+                        <property name="name">
+                            <value>BankAgency</value>
+                        </property>
+                    </bean>
+                </sm:component>
+            </sm:activationSpec>
+        </sm:activationSpecs>
+    </sm:serviceunit>
+</beans>

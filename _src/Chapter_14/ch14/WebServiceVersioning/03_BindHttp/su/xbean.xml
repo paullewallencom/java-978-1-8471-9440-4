@@ -1,0 +1,47 @@
+<beans  xmlns:http="http://servicemix.apache.org/http/1.0" 
+
+		xmlns:version20061231="http://version20061231.ws.servicemix.esb.binildas.com"
+		xmlns:version20070101="http://version20070101.ws.servicemix.esb.binildas.com"
+		
+        xmlns:test="http://AxisEndToEnd.axis.apache.binildas.com">
+
+    <classpath>
+        <location>.</location>
+    </classpath>
+
+
+	<http:endpoint service="version20061231:IHelloWebService"
+		   endpoint="HelloWebService"
+		   role="provider" 
+		   locationURI="http://localhost:8080/AxisEndToEnd20061231/services/HelloWebService20061231" 
+		   soap="true" 
+		   soapAction="" 
+		   wsdlResource="http://localhost:8080/AxisEndToEnd20061231/services/HelloWebService20061231?WSDL" />                   
+
+	<http:endpoint service="version20061231:MyConsumerService"
+		   endpoint="HelloWebService"
+		   role="consumer" 
+		   targetService="version20061231:IHelloWebService" 
+		   locationURI="http://localhost:8081/services/HelloWebService20061231" 
+		   soap="true" 
+		   defaultMep="http://www.w3.org/2004/08/wsdl/in-out" 
+		   wsdlResource="http://localhost:8080/AxisEndToEnd20061231/services/HelloWebService20061231?WSDL" />
+
+	<http:endpoint service="version20070101:IHelloWebService"
+		   endpoint="HelloWebService"
+		   role="provider" 
+		   locationURI="http://localhost:8080/AxisEndToEnd20070101/services/HelloWebService20070101" 
+		   soap="true" 
+		   soapAction="" 
+		   wsdlResource="http://localhost:8080/AxisEndToEnd20070101/services/HelloWebService20070101?WSDL" />                   
+
+	<http:endpoint service="version20070101:MyConsumerService"
+		   endpoint="HelloWebService"
+		   role="consumer" 
+		   targetService="version20070101:IHelloWebService" 
+		   locationURI="http://localhost:8081/services/HelloWebService20070101" 
+		   soap="true" 
+		   defaultMep="http://www.w3.org/2004/08/wsdl/in-out" 
+		   wsdlResource="http://localhost:8080/AxisEndToEnd20070101/services/HelloWebService20070101?WSDL" />
+
+</beans>

@@ -1,0 +1,42 @@
+<!-- edited with XMLSpy v2006 rel. 3 sp1 (http://www.altova.com) by Jasper (CS&S) -->
+<project name="jsrproxy" default="all" basedir=".">
+
+  <property file="../../../examples.properties"/>
+
+  <property name="build.dir" value="build" />
+  <property name="src.dir" value="src" />
+  <property name="su.src.dir" value="su" />
+  <property name="sa.src.dir" value="sa" />
+  <property name="lib.dir" value="lib" />
+  <property name="install.dir" value="install" />
+  <property name="deploy.dir" value="deploy" />
+  
+ 
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${install.dir}"/>
+    <delete dir="${deploy.dir}"/>
+    <delete dir="wdir" />
+    <delete dir="data" />
+    <delete dir="rootDir" />
+  </target>
+  
+  <target name="init" depends="clean">
+
+  </target>
+  
+  <target name="copy-components" depends="init" description="Build components">
+  
+    <copy todir="${servicemix.home}/lib/optional" overwrite="true">
+      <fileset dir="${client.classes.dir}" includes="sample_statelessSession_client.jar" />
+    </copy>
+    <copy todir="${servicemix.home}/lib/optional" overwrite="true">
+      <fileset dir="${wl.home}/server/lib" includes="weblogic.jar" />
+    </copy>
+    
+  </target>
+  
+  <target name="all" depends="copy-components" description="Setup servicemix">
+  </target>
+  
+</project>

@@ -1,0 +1,26 @@
+<beans  xmlns:sm="http://servicemix.apache.org/config/1.0" 
+        xmlns:jsr181="http://servicemix.apache.org/jsr181/1.0" 
+        xmlns:http="http://servicemix.apache.org/http/1.0" 
+        xmlns:test="http://test">
+
+    <classpath>
+        <location>.</location>
+    </classpath>
+
+  <jsr181:endpoint annotations="none" service="test:echoService" serviceInterface="test.IEcho">
+    <jsr181:pojo>
+      <bean class="test.EchoProxyService">
+        <property name="echo">
+          <jsr181:proxy service="test:TargetService" context="#context" type="test.IEcho" />
+        </property>
+      </bean>
+    </jsr181:pojo>
+  </jsr181:endpoint>
+
+  <jsr181:endpoint annotations="none" service="test:TargetService" serviceInterface="test.IEcho">
+    <jsr181:pojo>
+      <bean class="test.TargetService" />
+    </jsr181:pojo>
+  </jsr181:endpoint>
+
+</beans>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:sm="http://servicemix.apache.org/config/1.0"
+       xmlns:http="http://servicemix.apache.org/http/1.0"
+       xmlns:soap="http://servicemix.apache.org/soap/1.0"
+       xmlns:test="http://binildas.com/esb/servicemix/security">
+
+  <import resource="classpath:activemq.xml" />
+  <import resource="classpath:jmx.xml" />
+  <import resource="classpath:jndi.xml" />
+  <import resource="classpath:tx.xml" />
+  <import resource="classpath:security.xml" />
+
+    <classpath>
+        <location>.</location>
+    </classpath>
+
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="location" value="classpath:servicemix.properties" />
+  </bean>
+
+  <sm:systemProperties>
+    <property name="properties">
+      <map>
+        <entry key="java.security.auth.login.config">
+          <bean class="org.springframework.util.ResourceUtils" factory-method="getFile">
+            <constructor-arg value="classpath:basiclogin.properties"/>
+          </bean>
+        </entry>
+      </map>
+    </property>
+  </sm:systemProperties>
+
+  <sm:container id="jbi" rootDir="./wdir">
+  
+    <!-- Use a secured broker which will check the authenticated
+         user for the needed ACLs before granting access to a given
+         endpoint -->
+    <sm:broker>
+      <sm:securedBroker>
+        <sm:authorizationMap>
+  	      <sm:authorizationMap>
+  	        <!-- ACL list -->
+  	        <sm:authorizationEntries>
+  	          <!-- The default policy is, only 'superuser' role can access JBI endpoints -->
+  	          <sm:authorizationEntry service="*:*" roles="superuser" />
+  	          <!-- test:echo service is authorized for role 'secureuser' -->
+  	          <sm:authorizationEntry service="test:echo" roles="secureuser" />
+  	        </sm:authorizationEntries>
+  	      </sm:authorizationMap>
+        </sm:authorizationMap>
+      </sm:securedBroker>
+    </sm:broker>
+    
+      
+    <sm:activationSpecs>
+
+  	  <sm:activationSpec id="http">
+  	    <sm:component>
+  	      <http:component>
+  	        <http:endpoints>
+  	        
+  	          <!-- Secured endpoint using http basic authentication -->
+  	          <http:endpoint service="test:httpConsumer"
+  	                         endpoint="httpConsumer"
+  	                         targetService="test:echo"
+  	                         role="consumer"
+  	                         locationURI="http://localhost:8193/Service/"
+  	          				       authMethod="basic" 
+  	          				       defaultMep="http://www.w3.org/2004/08/wsdl/in-out">
+              </http:endpoint>
+                
+  	        </http:endpoints>
+  	      </http:component>
+  	    </sm:component>
+  	  </sm:activationSpec>
+
+	<sm:activationSpec componentName="echo" service="test:echo">
+		<sm:component>
+			<bean class="org.apache.servicemix.components.util.EchoComponent" />
+		</sm:component>
+	</sm:activationSpec>
+
+    </sm:activationSpecs>
+  </sm:container>
+
+</beans>

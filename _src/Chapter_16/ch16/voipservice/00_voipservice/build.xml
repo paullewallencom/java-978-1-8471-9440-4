@@ -1,0 +1,235 @@
+<?xml version="1.0" ?>
+
+<project default="all"> 
+
+	<property file="../../../examples.properties"/>
+
+    <property name="build" value="build"/>
+    <property name="dist" value="dist"/>
+    <property name="lib" value="lib"/>
+    <property name="src" value="src"/>
+    <property name="gensrc" value="gensrc"/>
+    <property name="xgensrc" value="xgensrc"/>
+    <property name="config" value="config"/>
+    
+    <property name="webapp.name" value="voipservice"/>
+    <property name="service.name" value="VoipService"/>
+    <property name="wsdl" value="VoipService.wsdl"/>
+    
+    <property name="interface.package" value="com.binildas.esb.servicemix.serviceassembly.voipservice"/>
+    <property name="interface.path" value="com/binildas/esb/servicemix/serviceassembly/voipservice"/>
+    <property name="interface.class" value="IVoip"/>
+    
+    <property name="implement.package" value="com.binildas.esb.servicemix.serviceassembly.voipservice"/>
+    <property name="implement.path" value="com/binildas/esb/servicemix/serviceassembly/voipservice"/>
+    <property name="implement.class" value="VoipImpl"/>
+
+    <path id="classpath">
+        <fileset dir="${spring.home}/dist">
+            <include name="spring.jar"/>
+        </fileset>
+        <fileset dir="${axis.home}/lib">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${xstream.home}/lib">
+            <include name="*.jar"/>
+        </fileset>
+        
+        <!--pathelement path="${src}" /-->
+        <pathelement path="${build}" />
+        <fileset dir="${soap.home}/lib" includes="*.jar" />
+        <!--fileset dir="${jwsdp.home}" includes="jaxb/lib/*.jar" />
+        <fileset dir="${jwsdp.home}" includes="sjsxp/lib/*.jar" />
+        <fileset dir="${jwsdp.home}" includes="jwsdp-shared/lib/activation.jar" />
+        <fileset dir="${jwsdp.home}" includes="jwsdp-shared/lib/resolver.jar" />
+        <fileset dir="${jwsdp.home}" includes="jaxws/lib/*.jar" />
+        <fileset dir="${jwsdp.home}" includes="jwsdp-shared/lib/*.jar" />
+        <fileset dir="${jwsdp.home}" includes="jaxrpc/lib/*.jar" /-->
+        
+    </path>         
+
+  <!--taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+    <classpath refid="classpath" />
+  </taskdef-->
+        
+    <taskdef name="wsdl2java" classname="org.apache.axis.tools.ant.wsdl.Wsdl2javaAntTask" loaderref="axis" >
+        <classpath refid="classpath"/>
+    </taskdef>
+
+  <taskdef name="java2wsdl" classname="org.apache.axis.tools.ant.wsdl.Java2WsdlAntTask"
+    loaderref="axis" >
+        <classpath refid="classpath"/>
+  </taskdef>
+       
+    <target name="all" depends="clean, init, compileclient">
+    </target>
+
+    <target name="clean">
+        <delete dir="${build}"/>
+        <delete dir="${dist}"/>
+        <delete dir="${lib}"/>
+        <delete dir="${gensrc}"/>
+    </target>
+
+    <target name="init">
+        <mkdir dir="${build}"/>
+        <mkdir dir="${dist}"/>
+        <mkdir dir="${lib}"/>
+        <mkdir dir="${gensrc}"/>
+    </target>
+
+    <target name="copy">
+        <copy todir="${lib}">
+            <fileset dir="${spring.home}/dist">
+                <include name="spring.jar"/>
+            </fileset>
+            <fileset dir="${axis.home}/lib">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="precompile" depends="clean, init">
+        <javac srcdir="${src}" destdir="build" classpathref="classpath">
+            <include name="${interface.path}/${interface.class}.java"/>
+            <!--exclude name="**/*Client*.java"/-->
+        </javac>
+    </target>
+
+<target name="java2wsdl" depends="precompile">
+    <java classname="org.apache.axis.wsdl.Java2WSDL" fork="true" failonerror="true">
+        <arg value="-o"/>
+        <arg value="${wsdl}"/>
+        <arg value="-lhttp://localhost:8080/${webapp.name}/services/${service.name}"/>
+        <arg value="${interface.package}.${interface.class}"/>
+        <classpath>
+            <path refid="classpath"/>
+            <pathelement location="${build}"/>
+        </classpath>
+    </java>
+</target>
+
+  <target name="xjc" description="Compile all Java source files">
+    <delete dir="${xgensrc}"/>
+    <mkdir dir="${xgensrc}"/>
+    <echo message="Compiling the schema..." />
+    <xjc schema="Types.xsd" package="com.binildas.esb.servicemix.serviceassembly.voipservice" destdir="${xgensrc}">
+      <produces dir="${xgensrc}/com.binildas.esb.servicemix.serviceassembly.voipservice" includes="**/*.java" />
+    </xjc>
+  </target>
+
+    <target name="wsdl2java" depends="java2wsdl">
+        <java classname="org.apache.axis.wsdl.WSDL2Java" fork="true" failonerror="true">
+            <arg value="-o"/>
+            <arg value="${gensrc}"/>
+            <!--arg value="-D"/-->
+            <arg value="-s"/>
+            <arg value="-S"/>
+            <arg value="no"/>
+            <arg value="-c"/>
+            <arg value="${implement.package}.${implement.class}"/>
+            <arg value="${wsdl}"/>
+            <classpath>
+                <path refid="classpath"/>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="implement" depends="wsdl2java">
+
+        <copy todir="${gensrc}/${implement.path}" overwrite="ture">
+            <fileset dir="${src}/${implement.path}">
+                <include name="${implement.class}.java"/>           
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="compilesrc">
+        <javac srcdir="${src}" destdir="${build}">
+            <exclude name="**/*Client*.java"/>
+            <!--include name="**/*.java"/-->
+                <classpath>
+                    <path refid="classpath"/>
+            </classpath>   
+        </javac>
+    </target>
+
+    <target name="compilegenerated">
+        <javac srcdir="${gensrc}" destdir="${build}" classpathref="classpath">
+            <include name="**/${interface.class}ServiceLocator.java"/>
+            <include name="**/${service.name}SoapBindingStub.java"/>
+            <include name="**/${interface.class}Service.java"/>
+        </javac>
+    </target>
+
+    <target name="compile" depends="implement, compilesrc, compilegenerated">
+    </target>
+        
+    <target name="deploy" depends="compile, copy">
+    
+        <move todir="${config}" flatten="yes">
+            <fileset dir="${gensrc}">
+                <include name="**/*.wsdd"/>           
+            </fileset>
+        </move>
+    
+        <java classname="org.apache.axis.utils.Admin" fork="true" failonerror="true" dir="config">
+            <arg value="server"/>
+            <arg file="config/deploy.wsdd" />
+            <classpath>
+                <path refid="classpath"/>
+            </classpath>        
+        </java>
+                        
+        <war destfile="dist/${webapp.name}.war" webxml="config/web.xml">
+            <webinf dir="config">               
+                <include name="server-config.wsdd"/>
+                <include name="spring-config.xml"/>
+                <!--include name="applicationContext.xml"/-->
+            </webinf>
+            <lib dir="lib"/>                
+            <classes dir="build"/>          
+        </war>
+        
+        
+    </target>       
+
+    <target name="delete">
+        <delete dir="${lib}"/>
+    </target>
+
+    <target name="compileclient" depends="deploy">
+    
+	<!--delete dir="${build}"/>
+	<antcall target="compilesrc"/-->
+    
+        <javac srcdir="${src}" destdir="${build}">
+            <include name="**/*Client*.java"/>
+                <classpath>
+                    <path refid="classpath"/>
+            </classpath>   
+        </javac>
+    </target>
+
+    <target name="run">
+        <java classname="com.binildas.esb.servicemix.serviceassembly.voipservice.Client" fork="true" failonerror="true">
+            <!-- arg value="http://localhost:8080/voipservice/services/VoipService"/ >
+            <arg value="http://localhost:8081/${webapp.name}/services/${service.name}?WSDL"/>
+            <arg value="http://voipservice.serviceassembly.servicemix.esb.binildas.com"/>
+            <arg value="IVoipService"/-->
+                <classpath>
+                    <path refid="classpath"/>
+                    <pathelement location="build"/>
+            </classpath>   
+        </java>
+    </target>
+
+    <target name="xstream">
+        <java classname="com.binildas.esb.servicemix.serviceassembly.voipservice.XStreamUtil" fork="true" failonerror="true">
+                <classpath>
+                    <path refid="classpath"/>
+            </classpath>   
+        </java>
+    </target>
+
+</project>

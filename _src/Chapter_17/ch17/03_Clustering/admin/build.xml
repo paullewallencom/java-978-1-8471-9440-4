@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+
+<project name="apps" default="all" basedir=".">
+
+    <property file="../../../examples.properties"/>
+
+  
+  <target name="all" depends="clean">
+  </target>
+
+
+  <target name="clean">
+    <delete dir="target"/>
+    <delete dir="rootDir"/>
+    <delete dir="data"/>
+  </target>
+  
+</project>
+

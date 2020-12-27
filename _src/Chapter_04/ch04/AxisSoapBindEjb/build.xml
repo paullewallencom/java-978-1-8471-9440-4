@@ -1,0 +1,28 @@
+<project name="Interceptor" default="clear" basedir=".">
+	
+    <property file="../examples.properties"/>
+	
+	<property name="build.dir" value="build"/>
+	<property name="src.dir" value="src"/>
+	<property name="su.src.dir" value="su"/>
+	<property name="sa.src.dir" value="sa"/>
+	<property name="lib.dir" value="lib"/>
+
+	<property name="install.dir" value="install"/>
+	<property name="deploy.dir" value="deploy"/>
+    <property name="root.dir" value="wdir"/>
+	
+  <target name="clean">
+  </target>
+  
+  <target name="init" depends="clean">
+    <mkdir dir="${install.dir}" />
+    <mkdir dir="${deploy.dir}" />
+  </target>
+
+  <target name="clear" depends="clean">
+    <ant antfile="build.xml" dir="ejb" target="clean" inheritAll="true" />
+    <ant antfile="build.xml" dir="SoapBind" target="clean" inheritAll="true" />
+  </target>
+
+</project>

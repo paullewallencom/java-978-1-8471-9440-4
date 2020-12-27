@@ -1,0 +1,18 @@
+<beans  xmlns:jsr181="http://servicemix.apache.org/jsr181/1.0" 
+        xmlns:http="http://servicemix.apache.org/http/1.0" 
+        xmlns:test="http://test">
+
+    <classpath>
+        <location>.</location>
+    </classpath>
+
+
+    <http:endpoint service="test:MyConsumerService"
+                   endpoint="HelloWebService"
+                   role="consumer" 
+                   targetService="test:echoService" 
+                   locationURI="http://localhost:8081/services/AxisService" 
+                   soap="true" 
+                   defaultMep="http://www.w3.org/2004/08/wsdl/in-out" />
+
+</beans>

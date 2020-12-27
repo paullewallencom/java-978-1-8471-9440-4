@@ -1,0 +1,29 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from IHelloWebService WSDL service -->
+
+  <service name="HelloWebService" provider="java:RPC" style="wrapped" use="literal">
+      <parameter name="wsdlTargetNamespace" value="http://AxisEndToEnd.axis.apache.binildas.com"/>
+      <parameter name="wsdlServiceElement" value="IHelloWebService"/>
+      <parameter name="schemaQualified" value="http://AxisEndToEnd.axis.apache.binildas.com"/>
+      <parameter name="wsdlServicePort" value="HelloWebService"/>
+      <parameter name="className" value="com.binildas.apache.axis.AxisEndToEnd.HelloWebService"/>
+      <parameter name="wsdlPortType" value="IHelloWeb"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation name="hello" qname="operNS:hello" xmlns:operNS="http://AxisEndToEnd.axis.apache.binildas.com" returnQName="retNS:helloReturn" xmlns:retNS="http://AxisEndToEnd.axis.apache.binildas.com" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:in0" xmlns:pns="http://AxisEndToEnd.axis.apache.binildas.com" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <parameter name="allowedMethods" value="hello"/>
+
+  </service>
+</deployment>

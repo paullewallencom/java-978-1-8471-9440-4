@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<project name="wap" basedir="." default="clean">
+
+    <property file="../../examples.properties"/>
+
+
+
+  <target name="clean">
+    <delete dir="data"/>
+    <delete dir="rootDir"/>
+  </target>
+
+</project>

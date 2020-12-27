@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://xbean.org/schemas/spring/1.0" 
+      xmlns:sm="http://servicemix.apache.org/config/1.0"
+      xmlns:test="http://cbr.eip.servicemix.apache.binildas.com" 
+      xmlns:eip="http://servicemix.apache.org/eip/1.0" 
+      xmlns:jms="http://servicemix.apache.org/jms/1.0">
+
+	<classpath>
+		<location>.</location>
+	</classpath>
+
+  <import resource="classpath:jmx.xml" />
+  <import resource="classpath:jndi.xml" />
+  <import resource="classpath:security.xml" />
+  <import resource="classpath:tx.xml" />
+  <import resource="classpath:activemq.xml" />
+    
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="location" value="classpath:servicemix.properties" />
+  </bean>
+                          
+   <sm:container name="jbi"
+                 monitorInstallationDirectory="false"
+                 createMBeanServer="true"
+                 useMBeanServer="true">
+                 
+      <sm:activationSpecs>
+
+		<sm:activationSpec>
+		  <sm:component>
+			<jms:component>
+			  <jms:endpoints>
+				  <jms:endpoint service="test:MyConsumerService"
+								endpoint="myConsumer"
+								role="consumer" 
+								soap="false" 
+								targetService="test:router" 
+								defaultMep="http://www.w3.org/2004/08/wsdl/in-only"
+								destinationStyle="queue"
+								jmsProviderDestinationName="queue/A"
+								connectionFactory  ="#connectionFactory" />
+
+				  <jms:endpoint service="test:MyProviderService"
+								endpoint="myProvider"
+								role="provider" 
+								soap="false" 
+								destinationStyle="queue"
+								jmsProviderDestinationName="queue/B"
+								connectionFactory="#connectionFactory" />
+			  </jms:endpoints>
+			</jms:component>
+		  </sm:component>
+		</sm:activationSpec>    
+
+        <sm:activationSpec componentName="receiver1" service="test:receiver1" destinationService="test:MyProviderService">
+          <sm:component>
+            <bean xmlns="http://xbean.org/schemas/spring/1.0" class="MyReceiver" >
+                <property name="name">
+                  <value>1</value>
+                </property>
+            </bean>
+          </sm:component>
+        </sm:activationSpec>
+
+        <sm:activationSpec componentName="receiver2" service="test:receiver2" destinationService="test:MyProviderService">
+          <sm:component>
+            <bean xmlns="http://xbean.org/schemas/spring/1.0" class="MyReceiver" >
+                <property name="name">
+                  <value>2</value>
+                </property>
+            </bean>
+          </sm:component>
+        </sm:activationSpec>
+
+        <sm:activationSpec componentName="receiver3" service="test:receiver3" destinationService="test:MyProviderService">
+          <sm:component>
+            <bean xmlns="http://xbean.org/schemas/spring/1.0" class="MyReceiver" >
+                <property name="name">
+                  <value>3</value>
+                </property>
+            </bean>
+          </sm:component>
+        </sm:activationSpec>
+
+        <sm:activationSpec componentName="receiver4" service="test:receiver4" destinationService="test:MyProviderService">
+          <sm:component>
+            <bean xmlns="http://xbean.org/schemas/spring/1.0" class="MyReceiver" >
+                <property name="name">
+                  <value>4</value>
+                </property>
+            </bean>
+          </sm:component>
+        </sm:activationSpec>
+
+      <sm:activationSpec id="servicemix-eip">
+        <sm:component>
+          <eip:component>
+            <eip:endpoints>
+
+              <eip:content-based-router service="test:router" endpoint="endpoint">
+                <eip:rules>
+                
+                  <eip:routing-rule>
+                    <eip:predicate>
+                      <eip:xpath-predicate xpath="number(/hello/@id) &lt; 2" />
+                    </eip:predicate>
+                    <eip:target>
+                      <eip:exchange-target service="test:receiver1" />
+                    </eip:target>
+                  </eip:routing-rule>
+
+                  <eip:routing-rule>
+                    <eip:predicate>
+                      <eip:xpath-predicate xpath="number(/hello/@id) = 2" />
+                    </eip:predicate>
+                    <eip:target>
+                      <eip:exchange-target service="test:receiver2" />
+                    </eip:target>
+                  </eip:routing-rule>
+
+                  <eip:routing-rule>
+                    <eip:predicate>
+                      <eip:xpath-predicate xpath="number(/hello/@id) &gt; 3" />
+                    </eip:predicate>
+                    <eip:target>
+                      <eip:exchange-target service="test:receiver4" />
+                    </eip:target>
+                  </eip:routing-rule>
+                  
+                  <eip:routing-rule>
+                    <eip:target>
+                      <eip:exchange-target service="test:receiver3" />
+                    </eip:target>
+                  </eip:routing-rule>
+                  
+                </eip:rules>
+              </eip:content-based-router>
+
+            </eip:endpoints>
+          </eip:component>
+        </sm:component>
+      </sm:activationSpec>
+
+      </sm:activationSpecs>
+   </sm:container>                
+
+  <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL" value="tcp://localhost:61616" />
+  </bean>
+
+
+</beans>

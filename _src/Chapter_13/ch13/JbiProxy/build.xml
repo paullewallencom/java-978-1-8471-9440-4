@@ -1,0 +1,12 @@
+<project name="full" default="clean" basedir=".">
+
+  <property file="../../examples.properties"/>
+
+ 
+  <target name="clean">
+    <ant antfile="build.xml" dir="01_CompatibleInterface" target="clean" inheritAll="true" />
+    <ant antfile="build.xml" dir="02_IncompatibleInterface" target="clean" inheritAll="true" />
+    <ant antfile="build.xml" dir="03_AccessExternalWebService" target="clean" inheritAll="true" />
+  </target>
+  
+</project>

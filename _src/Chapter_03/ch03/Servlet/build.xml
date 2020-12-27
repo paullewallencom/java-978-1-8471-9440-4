@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<project name="wap" basedir="." default="all">
+
+    <property file="../../examples.properties"/>
+
+
+    <property name="root.dir" value="."/>
+    <property name="src.dir" value="."/>
+    <property name="build.dir" value="build"/>
+    <property name="dist.dir" value="dist"/>
+    <property name="conf.dir" value="conf"/>
+
+    <path id="classpath">
+        <fileset dir="${tomcat.home}/lib">
+            <include name="servlet*.jar"/>
+        </fileset>
+        <!--fileset dir="${httpunit.home}/lib">
+            <include name="*.jar"/>
+        </fileset-->
+        <pathelement path="${build.dir}/WEB-INF/classes"/>
+        <pathelement path="${root.dir}"/>
+        <pathelement path="${conf.dir}"/>
+    </path>
+
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${dist.dir}"/>
+  </target>
+
+  <target name="init" depends="clean">
+    <tstamp/>
+    <echo>You are using Java Version : ${java.version}</echo>
+    
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.dir}/WEB-INF"/>
+    <mkdir dir="${build.dir}/WEB-INF/lib"/>
+    <mkdir dir="${build.dir}/WEB-INF/classes"/>
+    
+    <mkdir dir="${dist.dir}"/>
+  </target>
+
+    <target name="all" depends="war, compileclient">
+    </target>
+    
+  <target name="copy">
+    <copy todir="${build.dir}/WEB-INF">
+      <fileset dir="${conf.dir}">
+        <include name="web.xml"/>
+      </fileset>
+    </copy>
+  </target>
+
+    <target name="compile" depends="init">
+        <javac destdir="${build.dir}/WEB-INF/classes" debug="true"
+            deprecation="false" optimize="false" failonerror="true">
+            <src path="${src.dir}"/>
+            <classpath refid="classpath"/>
+        </javac>
+    </target>
+
+  <target name="war" depends="compile, copy">
+    <jar jarfile="${dist.dir}/EsbServlet.war"
+      basedir="${build.dir}">
+    </jar>
+  </target>
+
+    <target name="compileclient">
+        <javac destdir="${build.dir}/WEB-INF/classes" debug="true"
+            deprecation="false" optimize="false" failonerror="true">
+            <src path="${src.dir}"/>
+            <classpath refid="classpath"/>
+        </javac>
+    </target>
+
+  <target name="run">
+     <java classname="HttpInOutClient" fork="yes" failonerror="true">
+	    <classpath refid="classpath"/>
+	    <!--arg value="http://localhost:8080/EsbServlet/hello/"/-->
+	    <arg value="http://localhost:8912/EsbServlet/hello/"/>
+	    <arg value="HttpSoapRequest.xml"/>
+	  </java>
+  </target>
+
+</project>

@@ -1,0 +1,69 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from IVoipService WSDL service -->
+
+  <service name="VoipService" provider="java:RPC" style="rpc" use="encoded">
+      <parameter name="wsdlTargetNamespace" value="http://voipservice.serviceassembly.servicemix.esb.binildas.com"/>
+      <parameter name="wsdlServiceElement" value="IVoipService"/>
+      <parameter name="schemaUnqualified" value="http://voipservice.serviceassembly.servicemix.esb.binildas.com"/>
+      <parameter name="wsdlServicePort" value="VoipService"/>
+      <parameter name="className" value="com.binildas.esb.servicemix.serviceassembly.voipservice.VoipImpl"/>
+      <parameter name="wsdlPortType" value="IVoip"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation name="provisionService" qname="operNS:provisionService" xmlns:operNS="http://voipservice.serviceassembly.servicemix.esb.binildas.com" returnQName="provisionServiceReturn" returnType="rtns:CreditProfileTO" xmlns:rtns="http://voipservice.serviceassembly.servicemix.esb.binildas.com" soapAction="" >
+        <parameter qname="in0" type="tns:ServiceParamTO" xmlns:tns="http://voipservice.serviceassembly.servicemix.esb.binildas.com"/>
+      </operation>
+      <parameter name="allowedMethods" value="provisionService"/>
+
+      <typeMapping
+        xmlns:ns="http://voipservice.serviceassembly.servicemix.esb.binildas.com"
+        qname="ns:CreditProfileTO"
+        type="java:com.binildas.esb.servicemix.serviceassembly.voipservice.CreditProfileTO"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="http://voipservice.serviceassembly.servicemix.esb.binildas.com"
+        qname="ns:ServiceParamTO"
+        type="java:com.binildas.esb.servicemix.serviceassembly.voipservice.ServiceParamTO"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="http://voipservice.serviceassembly.servicemix.esb.binildas.com"
+        qname="ns:CustomerTO"
+        type="java:com.binildas.esb.servicemix.serviceassembly.voipservice.CustomerTO"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="http://voipservice.serviceassembly.servicemix.esb.binildas.com"
+        qname="ns:AddressTO"
+        type="java:com.binildas.esb.servicemix.serviceassembly.voipservice.AddressTO"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="http://voipservice.serviceassembly.servicemix.esb.binildas.com"
+        qname="ns:CreditCardTO"
+        type="java:com.binildas.esb.servicemix.serviceassembly.voipservice.CreditCardTO"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+  </service>
+</deployment>

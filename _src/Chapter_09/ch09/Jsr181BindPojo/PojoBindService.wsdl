@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://io.java" xmlns:soap11="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope" xmlns:soapenc11="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soapenc12="http://www.w3.org/2003/05/soap-encoding" xmlns:tns="http://binildas.com/esb/jsrpojo" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://binildas.com/esb/jsrpojo">
+  <wsdl:types>
+    <xsd:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://binildas.com/esb/jsrpojo" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<xsd:element name="hello">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element maxOccurs="1" minOccurs="1" name="in0" nillable="true" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="helloResponse">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element maxOccurs="1" minOccurs="1" name="out" nillable="true" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="IOException" type="ns1:IOException"/>
+</xsd:schema>
+    <xsd:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://io.java" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<xsd:complexType name="IOException"/>
+</xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="helloRequest">
+    <wsdl:part element="tns:hello" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="helloResponse">
+    <wsdl:part element="tns:helloResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="IOException">
+    <wsdl:part element="tns:IOException" name="IOException">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="helloServicePortType">
+    <wsdl:operation name="hello">
+      <wsdl:input message="tns:helloRequest" name="helloRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:helloResponse" name="helloResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:IOException" name="IOException">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="PojoBindServiceBinding" type="tns:helloServicePortType">
+    <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="hello">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="helloRequest">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="helloResponse">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="IOException">
+        <wsdlsoap:fault name="IOException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="PojoBindService">
+    <wsdl:port binding="tns:PojoBindServiceBinding" name="PojoBindService">
+      <wsdlsoap:address location="http://localhost:8081/services/PojoBindService/"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

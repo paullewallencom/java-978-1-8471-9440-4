@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+ <globalConfiguration>
+  <parameter name="adminPassword" value="admin"/>
+  <parameter name="enableNamespacePrefixOptimization" value="false"/>
+  <parameter name="dotNetSoapEncFix" value="true"/>
+  <parameter name="disablePrettyXML" value="true"/>
+  <parameter name="sendMultiRefs" value="true"/>
+  <parameter name="sendXsiTypes" value="true"/>
+  <parameter name="attachments.implementation" value="org.apache.axis.attachments.AttachmentsImpl"/>
+  <parameter name="sendXMLDeclaration" value="true"/>
+  <requestFlow>
+   <handler type="java:org.apache.axis.handlers.JWSHandler">
+    <parameter name="scope" value="session"/>
+   </handler>
+   <handler type="java:org.apache.axis.handlers.JWSHandler">
+    <parameter name="scope" value="request"/>
+    <parameter name="extension" value=".jwr"/>
+   </handler>
+  </requestFlow>
+ </globalConfiguration>
+ <handler name="URLMapper" type="java:org.apache.axis.handlers.http.URLMapper"/>
+ <handler name="LocalResponder" type="java:org.apache.axis.transport.local.LocalResponder"/>
+ <handler name="Authenticate" type="java:org.apache.axis.handlers.SimpleAuthenticationHandler"/>
+ <service name="AdminService" provider="java:MSG">
+  <parameter name="allowedMethods" value="AdminService"/>
+  <parameter name="enableRemoteAdmin" value="false"/>
+  <parameter name="className" value="org.apache.axis.utils.Admin"/>
+  <namespace>http://xml.apache.org/axis/wsdd/</namespace>
+ </service>
+ <service name="Version" provider="java:RPC">
+  <parameter name="allowedMethods" value="getVersion"/>
+  <parameter name="className" value="org.apache.axis.Version"/>
+ </service>
+ <service name="VoipService" provider="java:RPC">
+  <operation name="provisionService" qname="ns1:provisionService" returnQName="provisionServiceReturn" returnType="ns1:CreditProfileTO" soapAction="" xmlns:ns1="http://voipservice.serviceassembly.servicemix.esb.binildas.com">
+   <parameter name="in0" type="ns1:ServiceParamTO"/>
+  </operation>
+  <parameter name="allowedMethods" value="provisionService"/>
+  <parameter name="typeMappingVersion" value="1.2"/>
+  <parameter name="wsdlPortType" value="IVoip"/>
+  <parameter name="className" value="com.binildas.esb.servicemix.serviceassembly.voipservice.VoipImpl"/>
+  <parameter name="wsdlServicePort" value="VoipService"/>
+  <parameter name="wsdlTargetNamespace" value="http://voipservice.serviceassembly.servicemix.esb.binildas.com"/>
+  <parameter name="wsdlServiceElement" value="IVoipService"/>
+  <parameter name="schemaUnqualified" value="http://voipservice.serviceassembly.servicemix.esb.binildas.com"/>
+  <typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" qname="ns2:CreditProfileTO" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.binildas.esb.servicemix.serviceassembly.voipservice.CreditProfileTO" xmlns:ns2="http://voipservice.serviceassembly.servicemix.esb.binildas.com"/>
+  <typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" qname="ns3:ServiceParamTO" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.binildas.esb.servicemix.serviceassembly.voipservice.ServiceParamTO" xmlns:ns3="http://voipservice.serviceassembly.servicemix.esb.binildas.com"/>
+  <typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" qname="ns4:CustomerTO" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.binildas.esb.servicemix.serviceassembly.voipservice.CustomerTO" xmlns:ns4="http://voipservice.serviceassembly.servicemix.esb.binildas.com"/>
+  <typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" qname="ns5:AddressTO" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.binildas.esb.servicemix.serviceassembly.voipservice.AddressTO" xmlns:ns5="http://voipservice.serviceassembly.servicemix.esb.binildas.com"/>
+  <typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" qname="ns6:CreditCardTO" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.binildas.esb.servicemix.serviceassembly.voipservice.CreditCardTO" xmlns:ns6="http://voipservice.serviceassembly.servicemix.esb.binildas.com"/>
+ </service>
+ <transport name="http">
+  <requestFlow>
+   <handler type="URLMapper"/>
+   <handler type="java:org.apache.axis.handlers.http.HTTPAuthHandler"/>
+  </requestFlow>
+  <parameter name="qs:list" value="org.apache.axis.transport.http.QSListHandler"/>
+  <parameter name="qs:wsdl" value="org.apache.axis.transport.http.QSWSDLHandler"/>
+  <parameter name="qs:method" value="org.apache.axis.transport.http.QSMethodHandler"/>
+ </transport>
+ <transport name="local">
+  <responseFlow>
+   <handler type="LocalResponder"/>
+  </responseFlow>
+ </transport>
+</deployment>

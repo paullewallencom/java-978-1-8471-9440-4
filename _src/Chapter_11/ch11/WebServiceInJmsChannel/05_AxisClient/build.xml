@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="all" name="hello">
+
+  <property file="../../../examples.properties"/>
+
+  <property name="src" value="src" /> 
+  <property name="build" value="build" /> 
+
+    <path id="classpath">
+      <pathelement path="."/>
+      <pathelement path="config"/>
+      <pathelement path="${build}"/>
+      <!--fileset dir="${openjms.home}/lib">
+        <include name="*.jar"/>
+      </fileset-->
+      <fileset dir="${servicemix.home}/lib">
+        <include name="**/*.jar" />
+      </fileset>
+      <fileset dir="${servicemix.home}/lib/optional">
+        <include name="**/*.jar" />
+      </fileset>
+      <fileset dir="${axis.home}/lib">
+        <include name="*.jar"/>
+      </fileset>
+    </path>
+
+  <target name="all" depends="clean, init, compile">
+  </target>
+
+    <target name="clean" description="cleans">
+        <delete dir="${build}"/>
+    </target>
+
+    <target name="init" description="cleans">
+        <mkdir dir="${build}"/>
+    </target>
+
+  <target name="compile" description="Compile all Java">
+    <javac srcdir="${src}" destdir="${build}" debug="on" source="1.6" target="1.6">
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
+
+  <target name="run" description="Runs the example client">
+    <echo>Running example client</echo>
+    <java classname="com.binildas.apache.axis.AxisEndToEnd.JMSTestClientRPCWebService" fork="yes" maxmemory="100M">
+      <classpath refid="classpath"/>
+      <arg value="binil" />
+      <arg value="1" />
+    </java>
+  </target>
+
+</project>

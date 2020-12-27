@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:sm="http://servicemix.apache.org/config/1.0" 
+		xmlns:amq="http://activemq.org/config/1.0" 
+		xmlns:eip="http://servicemix.apache.org/eip/1.0" 
+	     xmlns:foo="http://servicemix.org/demo/">
+
+	<classpath>
+		<location>.</location>
+		<location>./build</location>
+	</classpath>
+
+  <!--bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="location" value="classpath:servicemix.properties" />
+  </bean>
+    
+  <import resource="classpath:jmx.xml" />
+  <import resource="classpath:jndi.xml" />
+  <import resource="classpath:security.xml" />
+  <import resource="classpath:tx.xml" />
+  <import resource="classpath:activemq.xml" /-->
+
+
+  <bean id="jndi" class="org.apache.xbean.spring.jndi.SpringInitialContextFactory" 
+        factory-method="makeInitialContext" singleton="true" />
+
+	<!-- the JBI container -->
+	<sm:container id="jbi" 
+                name="managed2" 
+                flowName="jms?jmsURL=tcp://localhost:61616" 
+                useMBeanServer="true"
+		            createMBeanServer="true" 
+                rmiPort="1111">
+
+		<sm:activationSpecs>
+
+        <sm:activationSpec componentName="receiver3" service="foo:receiver3">
+          <sm:component>
+            <bean xmlns="http://xbean.org/schemas/spring/1.0" class="managed2.MyReceiver" >
+                <property name="name">
+                  <value>3</value>
+                </property>
+            </bean>
+          </sm:component>
+        </sm:activationSpec>
+
+        <sm:activationSpec componentName="receiver2" service="foo:receiver2">
+          <sm:component>
+            <bean xmlns="http://xbean.org/schemas/spring/1.0" class="managed2.MyReceiver" >
+                <property name="name">
+                  <value>2</value>
+                </property>
+            </bean>
+          </sm:component>
+        </sm:activationSpec>
+
+		</sm:activationSpecs>
+	</sm:container>
+	
+</beans>

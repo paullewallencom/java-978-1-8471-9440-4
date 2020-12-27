@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <context-param>
+      <param-name>contextConfigLocation</param-name>
+          <param-value>classpath:org/codehaus/xfire/spring/xfire.xml
+, /WEB-INF/classes/META-INF/xfire/xfire-servlet.xml
+      </param-value>
+    </context-param>
+
+    <servlet>
+       <servlet-name>XFireServlet</servlet-name>
+       <servlet-class>
+           org.codehaus.xfire.spring.XFireSpringServlet
+       </servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>XFireServlet</servlet-name>
+        <url-pattern>/servlet/XFireServlet/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>XFireServlet</servlet-name>
+        <url-pattern>/services/*</url-pattern>
+    </servlet-mapping>
+    
+</web-app>

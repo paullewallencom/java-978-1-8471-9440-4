@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<project name="wap" basedir="." default="all">
+
+    <property file="../../examples.properties"/>
+  
+    <property name="root.dir" value="."/>
+    <property name="src.dir" value="."/>
+    <property name="build.dir" value="build"/>
+    <property name="dist.dir" value="dist"/>
+    <property name="conf" value="conf"/>
+
+    <property environment="env"/>
+
+    <path id="classpath">
+        <fileset dir="${tomcat.home}/lib">
+            <include name="servlet*.jar"/>
+        </fileset>
+        <fileset dir="${build.dir}/WEB-INF/lib">
+            <include name="*.jar"/>
+        </fileset>
+        <pathelement path="${build.dir}/WEB-INF/classes"/>
+        <pathelement path="${root.dir}"/>
+    </path>
+
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${dist.dir}"/>
+  </target>
+
+  <target name="init" depends="clean">
+    <tstamp/>
+    <echo>You are using Java Version : ${java.version}</echo>
+    
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.dir}/WEB-INF"/>
+    <mkdir dir="${build.dir}/WEB-INF/lib"/>
+    <mkdir dir="${build.dir}/WEB-INF/classes"/>
+    <mkdir dir="${build.dir}/WEB-INF/classes/META-INF/xfire"/>
+    
+    <mkdir dir="${dist.dir}"/>
+  </target>
+
+    
+  <target name="copy">
+    <!-- Make a standard ejb jar file, including XML deployment descriptors -->
+    <copy todir="${build.dir}/WEB-INF">
+      <fileset dir="${conf}">
+        <include name="*.*"/>
+      </fileset>
+    </copy>
+  </target>
+
+    <target name="all" depends="clean, init, copy, copyjars, compile, war">
+    </target>
+
+    <target name="compile">
+        <javac destdir="${build.dir}/WEB-INF/classes" debug="true"
+            deprecation="false" optimize="false" failonerror="true">
+            <src path="${src.dir}"/>
+            <classpath refid="classpath"/>
+        </javac>
+    </target>
+
+  <target name="copyjars">
+    <copy todir="${build.dir}/WEB-INF/lib">
+      <fileset dir="${xfire.home}">
+        <include name="xfire-all*.jar"/>
+      </fileset>
+    </copy>
+    <copy todir="${build.dir}/WEB-INF/lib">
+      <fileset dir="${xfire.home}/lib">
+        <include name="activation*.jar"/>
+        <include name="commons-codec*.jar"/>
+        <include name="commons-httpclient*.jar"/>
+        <include name="commons-logging*.jar"/>
+        <include name="jaxen*.jar"/>
+        <include name="jdom*.jar"/>
+        <include name="log4j*.jar"/>
+        <include name="mail*.jar"/>
+        <include name="spring*.jar"/>
+        <include name="stax-api*.jar"/>
+        <include name="wsdl4j*.jar"/>
+        <include name="wstx-asl*.jar"/>
+        <include name="xbean*.jar"/>
+        <include name="xbean-spring*.jar"/>
+        <include name="xfire-all*.jar"/>
+        <include name="XmlSchema*.jar"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="war" depends="copy">
+    <jar jarfile="${dist.dir}/HelloXFireExport.war"
+      basedir="${build.dir}">
+    </jar>
+  </target>
+
+  <target name="run">
+     <java classname="Client" fork="yes" failonerror="true">
+        <arg value="http://localhost:8080/HelloXFireExport/services/HelloService"/>
+        <classpath>
+           <path refid="classpath"/>
+           <path location="${build.dir}/classes"/>
+        </classpath>
+      </java>
+  </target>
+
+</project>

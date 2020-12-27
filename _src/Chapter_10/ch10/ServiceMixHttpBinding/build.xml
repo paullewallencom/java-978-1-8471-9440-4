@@ -1,0 +1,60 @@
+<project name="full" default="all" basedir=".">
+
+  <property file="../../examples.properties"/>
+
+  <property name="src.dir" value="src" />
+  <property name="su.src.dir" value="su" />
+  <property name="sa.src.dir" value="sa" />
+  <property name="lib.dir" value="lib" />
+  <property name="install.dir" value="install" />
+  <property name="deploy.dir" value="deploy" />
+  
+ 
+  <target name="clean">
+    <delete dir="${install.dir}"/>
+    <delete dir="${deploy.dir}"/>
+    <delete dir="wdir" />
+    <delete dir="data" />
+
+    <ant antfile="build.xml" dir="01_ws" target="clean" inheritAll="true" />
+    <ant antfile="build.xml" dir="02_BindHttp" target="clean" inheritAll="true" />
+    <ant antfile="build.xml" dir="03_AxisClient" target="clean" inheritAll="true" />
+  </target>
+  
+  <target name="init" depends="clean">
+    <mkdir dir="${install.dir}" />
+    <mkdir dir="${deploy.dir}" />
+  </target>
+
+  <target name="all" depends="clean, init, callAll, copy" description="Setup all components">
+
+  </target>
+
+  <target name="callAll" description="Setup all components">
+    <ant antfile="build.xml" dir="01_ws" target="all" inheritAll="true" />
+    <ant antfile="build.xml" dir="02_BindHttp" target="all" inheritAll="true" />
+  </target>
+
+  <target name="copy">
+    <copy todir="${install.dir}" overwrite="true">
+      <fileset dir="02_BindHttp/${install.dir}" includes="*.*" />
+    </copy>
+    <copy todir="${deploy.dir}" overwrite="true">
+      <fileset dir="02_BindHttp/${deploy.dir}" includes="*.*" />
+    </copy>
+
+  </target>
+
+    <target name="compileclient">
+	    <ant antfile="build.xml" dir="03_BindJms" target="build-components" inheritAll="true" />
+    </target>
+
+    <target name="run1">
+	    <ant antfile="build.xml" dir="03_BindJms" target="run" inheritAll="true" />
+    </target>
+
+    <target name="run2">
+	    <ant antfile="build.xml" dir="05_AxisClient" target="run" inheritAll="true" />
+    </target>
+
+</project>

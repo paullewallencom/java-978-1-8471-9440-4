@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2006 rel. 3 sp1 (http://www.altova.com) by Jasper (CS&S) -->
+<beans 	xmlns:sm="http://servicemix.apache.org/config/1.0" 
+		xmlns:test="http://xslt.servicemix.apache.binildas.com" 
+		xmlns:binil="http://www.binildas.com/voipservice" 
+		
+		xmlns:version20061231="http://version20061231.ws.servicemix.esb.binildas.com"
+		xmlns:version20070101="http://version20070101.ws.servicemix.esb.binildas.com"
+		
+      xmlns:eip="http://servicemix.apache.org/eip/1.0" 
+      xmlns:jms="http://servicemix.apache.org/jms/1.0">
+		
+    <!-- the JBI container -->
+
+	<classpath>
+		<location>.</location>
+	</classpath>
+    
+  <import resource="classpath:jmx.xml" />
+  <import resource="classpath:jndi.xml" />
+  <import resource="classpath:security.xml" />
+  <import resource="classpath:tx.xml" />
+  <import resource="classpath:activemq.xml" />
+    
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="location" value="classpath:servicemix.properties" />
+  </bean>
+
+    
+    <sm:container id="jbi" MBeanServer="#jmxServer" useMBeanServer="true" createMBeanServer="true" rootDir="./wdir" installationDirPath="./install" deploymentDirPath="./deploy" flowName="seda">
+    
+    <sm:activationSpecs>
+
+		<sm:activationSpec>
+		  <sm:component>
+			<jms:component>
+			  <jms:endpoints>
+				  <jms:endpoint service="test:MyConsumerService"
+								endpoint="myConsumer"
+								role="consumer" 
+								soap="false" 
+								targetService="test:extraneousWhiteSpaceTransformer" 
+								defaultMep="http://www.w3.org/2004/08/wsdl/in-only"
+								destinationStyle="queue"
+								jmsProviderDestinationName="queue/A"
+								connectionFactory  ="#connectionFactory" />
+
+				  <jms:endpoint service="test:MyProviderService"
+								endpoint="myProvider"
+								role="provider" 
+								soap="false" 
+								destinationStyle="queue"
+								jmsProviderDestinationName="queue/B"
+								connectionFactory="#connectionFactory" />
+			  </jms:endpoints>
+			</jms:component>
+		  </sm:component>
+		</sm:activationSpec>    
+
+      <sm:activationSpec componentName="extraneousWhiteSpaceTransformer" service="test:extraneousWhiteSpaceTransformer" 
+                            destinationService="test:router">
+        <sm:component>
+        	<bean class="org.apache.servicemix.components.xslt.XsltComponent">
+          		<property name="xsltResource" value="RemoveExtraneousWhiteSpace.xsl"/>
+        	</bean>
+        </sm:component>
+      </sm:activationSpec>
+
+      <sm:activationSpec componentName="soapContentRetreiver" service="test:soapContentRetreiver">
+        <sm:component>
+        	<bean class="org.apache.servicemix.components.xslt.XsltComponent">
+          		<property name="xsltResource" value="SoapRequest-To-Request.xsl"/>
+        	</bean>
+        </sm:component>
+      </sm:activationSpec>
+      
+      <sm:activationSpec id="servicemix-eip">
+        <sm:component>
+          <eip:component>
+            <eip:endpoints>
+
+              <!-- START SNIPPET: content-based-router -->
+              <eip:content-based-router service="test:router" endpoint="endpoint">
+                <eip:rules>
+                
+                  <eip:routing-rule>
+                    <eip:predicate>
+                      <eip:xpath-predicate xpath="number(substring-before(substring-after(namespace-uri-for-prefix(substring-before(name(/*/child::node()/child::node()), ':'), /*/child::node()/child::node()), 'http://version'), '.ws.servicemix.esb.binildas.com')) &lt; 20061231" />
+                    </eip:predicate>
+                    <eip:target>
+                      <eip:exchange-target service="test:pipelineTransformBefore20061231" />
+                    </eip:target>
+                  </eip:routing-rule>
+
+
+                  <eip:routing-rule>
+                    <eip:predicate>
+                      <eip:xpath-predicate xpath="number(substring-before(substring-after(namespace-uri-for-prefix(substring-before(name(/*/child::node()/child::node()), ':'), /*/child::node()/child::node()), 'http://version'), '.ws.servicemix.esb.binildas.com')) = 20061231" />
+                    </eip:predicate>
+                    <eip:target>
+                      <eip:exchange-target service="test:pipelineTransform20061231" />
+                    </eip:target>
+                  </eip:routing-rule>
+				  
+                  <eip:routing-rule>
+                    <eip:predicate>
+                      <eip:xpath-predicate xpath="number(substring-before(substring-after(namespace-uri-for-prefix(substring-before(name(/*/child::node()/child::node()), ':'), /*/child::node()/child::node()), 'http://version'), '.ws.servicemix.esb.binildas.com')) &gt; 20061231" />
+                    </eip:predicate>
+                    <eip:target>
+                      <eip:exchange-target service="test:pipelineTransformAfter20061231" />
+                    </eip:target>
+                  </eip:routing-rule>
+
+                  
+                  <eip:routing-rule>
+                    <eip:target>
+                      <eip:exchange-target service="test:pipelineTransformAfter20061231" />
+                    </eip:target>
+                  </eip:routing-rule>
+                  
+                </eip:rules>
+              </eip:content-based-router>
+              <!-- END SNIPPET: content-based-router -->
+<!-- ******************** PipeLine Set for Service Before 20061231 : Start ******************** -->
+			  <eip:pipeline service="test:pipelineTransformBefore20061231" endpoint="pipelineTransformBefore20061231">
+				<eip:transformer>
+				  <!--eip:exchange-target service="test:receiver2" /-->
+				  <eip:exchange-target service="test:soapContentRetreiver" />
+				</eip:transformer>
+				<eip:target>
+				  <eip:exchange-target service="test:pipelineServiceBefore20061231" />
+				</eip:target>
+			  </eip:pipeline>
+
+			  <eip:pipeline service="test:pipelineServiceBefore20061231" endpoint="pipelineServiceBefore20061231">
+				<eip:transformer>
+				  <!--eip:exchange-target service="test:receiver2" /-->
+				  <eip:exchange-target service="version20061231:IHelloWebService" />
+				</eip:transformer>
+				<eip:target>
+				  <eip:exchange-target service="test:MyProviderService" />
+				</eip:target>
+			  </eip:pipeline>
+<!-- ******************** PipeLine Set for Service Before 20061231 : End ******************** -->
+
+<!-- ******************** PipeLine Set for Service = 20061231 : Start ******************** -->
+			  <eip:pipeline service="test:pipelineTransform20061231" endpoint="pipelineTransform20061231">
+				<eip:transformer>
+				  <!--eip:exchange-target service="test:receiver2" /-->
+				  <eip:exchange-target service="test:soapContentRetreiver" />
+				</eip:transformer>
+				<eip:target>
+				  <eip:exchange-target service="test:pipelineService20061231" />
+				</eip:target>
+			  </eip:pipeline>
+
+			  <eip:pipeline service="test:pipelineService20061231" endpoint="pipelineService20061231">
+				<eip:transformer>
+				  <!--eip:exchange-target service="test:receiver2" /-->
+				  <eip:exchange-target service="version20061231:IHelloWebService" />
+				</eip:transformer>
+				<eip:target>
+				  <eip:exchange-target service="test:MyProviderService" />
+				</eip:target>
+			  </eip:pipeline>
+<!-- ******************** PipeLine Set for Service = 20061231 : End ******************** -->
+
+<!-- ******************** PipeLine Set for Service After 20061231 : Start ******************** -->
+			  <eip:pipeline service="test:pipelineTransformAfter20061231" endpoint="pipelineTransformAfter20061231">
+				<eip:transformer>
+				  <!--eip:exchange-target service="test:receiver2" /-->
+				  <eip:exchange-target service="test:soapContentRetreiver" />
+				</eip:transformer>
+				<eip:target>
+				  <eip:exchange-target service="test:pipelineServiceAfter20061231" />
+				</eip:target>
+			  </eip:pipeline>
+
+			  <eip:pipeline service="test:pipelineServiceAfter20061231" endpoint="pipelineServiceAfter20061231">
+				<eip:transformer>
+				  <!--eip:exchange-target service="test:receiver2" /-->
+				  <eip:exchange-target service="version20070101:IHelloWebService" />
+				</eip:transformer>
+				<eip:target>
+				  <eip:exchange-target service="test:MyProviderService" />
+				</eip:target>
+			  </eip:pipeline>
+<!-- ******************** PipeLine Set for Service After 20061231 : End ******************** -->
+				  
+            </eip:endpoints>
+          </eip:component>
+        </sm:component>
+      </sm:activationSpec>
+
+      </sm:activationSpecs>
+   </sm:container>                
+
+  <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL" value="tcp://localhost:61616" />
+  </bean>
+
+  <bean id="xPathFactory" class="net.sf.saxon.xpath.XPathFactoryImpl">
+  </bean>
+
+</beans>
